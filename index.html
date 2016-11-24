@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Boston FIO Data</title>
+        <meta name="description" content="Final Project for NEU CS:7280, A Boston FIO Data Map">
+        <meta name="keywords" content="HTML,CSS,JavaScript,311,datavis,map,policing,race, Boston, stop ">
+        <meta name="author" content="Alex Ahmed,Patrick O'Donnel">
+
+        <!--Fonts-->
+        <link href="https://fonts.googleapis.com/css?family=Raleway:300,300i,400,500,500i,700" rel="stylesheet">
+
+        <!--Stylesheets-->
+        <link rel="stylesheet" href="css/style.css"/>
+    </head>
+
+    <body>
+        <div id="background">
+            <div id="containerintro">
+                
+                <div class="columns columnC">
+                    <div class="chart"></div>
+                </div>
+
+                <div class="columns columnB">
+                    <p class="text p1">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas lacinia diam erat, ullamcorper pretium massa posuere vitae. Maecenas eget tristique ante. Phasellus a arcu et nunc finibus pharetra. Mauris a posuere nulla. Nulla nibh quam, consectetur sit amet velit sed, tempor finibus risus. Donec ipsum lacus, suscipit in nisl nec, interdum tincidunt lectus. In elementum tristique luctus.</p>
+
+                    <p class="text p2">Curabitur sollicitudin, arcu eget congue scelerisque, dui lacus lacinia nisl, in consectetur neque elit sed magna. Sed tincidunt fringilla sagittis. Suspendisse lectus ipsum, imperdiet in tincidunt non, pharetra tempus sapien. Quisque non molestie ligula. Morbi lorem neque, bibendum in ligula non, iaculis elementum augue.</p>
+
+                    <p class="text p2">Quisque non molestie lacus, non dictum leo, cras vitae finibus fringilla odio. Phasellus lacus tellus, fringilla et massa quis, vestibulum malesuada ligula. Quisque pharetra condimentum tortor quis consequat. Class aptent taciti sociosqu ad litora torquent, per conubia nostra, per inceptos himenaeos. Id tristique ante, id interdum sapien.</p>
+                </div>
+
+                <div class="columns columnA">
+                    <h1 class="title">Stop and Frisk: Boston</h1>
+                    <h2 class="subtitle where">where, when and who</h2>
+                </div> 
+            </div>
+
+            <div id="containermap">
+                <div class="plot"></div>
+            </div>
+
+            <div id="containeroutro">
+                <div class="columns columnC restrictC">
+                    <!--<div class="numbers">
+                        <p class="n1 extra_line">a.</p>
+
+                        <p class="n1">b.</p>
+
+                        <p class="n1">c.</p>
+
+
+                        <p class="n1 extra_line">1.</p>
+
+                        <p class="n1">2.</p> 
+                    </div>-->
+
+                    <div class="next_numbers">
+                        <p class="text p1">Alex Ahmed<br>ahmed.al@husky.neu.edu</p>
+
+                        <p class="text p1">Patrick J. O'Donnel<br>odonnel.p@husky.neu.edu</p>
+
+                        <p class="text p1 extra_line">Baysmith, Robert L. Lorem ipsum dolor sit amet, consectetur adipiscing elit, 2009.</p>
+
+                        <p class="text p1">Grandier, Mary. Uomocapitus lacinia diam erat, ullamcorper pretium massa posuere vitae, 2016. </p>
+
+                        <p class="text p1">Kinsey, Alfred. Maecenas eget tristique ante, 1998.</p>
+
+                        <p class="text p1 extra_line">Allen, Troy. Phasellus a arcu et nunc finibus pharetra. Mauris a posuere nulla, 2015.</p>
+
+                        <p class="text p1">Missau-Nollier, Claudia. Nulla nibh quam, consectetur sit amet velit sed, tempor finibus risus, 2008.</p> 
+                    </div>
+                </div>
+
+                <div class="columns columnB">
+                    <h2 class="subtitle">design</h2>
+                    <h2 class="subtitle subtitle_align1">data sources</h2>
+                    <h2 class="subtitle subtitle_align2">references</h2>
+                </div>
+                <div class="columns columnA"></div>
+            </div>
+        </div>
+
+        <!-- Libraries -->
+        <script src="https://d3js.org/d3.v4.min.js"></script>
+        <script src="https://d3js.org/d3-queue.v3.min.js"></script>
+        <script src="http://d3js.org/topojson.v1.min.js"></script>
+        <script src="./lib/crossfilter/crossfilter.js"></script>
+
+        <!-- Scripts -->
+        <script src="./scripts/map.js"></script>
+
+    </body>
+</html>
