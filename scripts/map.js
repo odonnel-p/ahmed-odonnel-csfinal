@@ -54,17 +54,120 @@
 //
 
 	d3.queue()
-    .defer(d3.csv,'data/Boston_Police_Department_FIO.csv', parse) //stop and frisk
-    .defer(d3.json, 'data/neighborhoods.json') //boston
+    .defer(d3.csv,'data/Boston_Police_Department_FIO_CLEANED.csv', parse) //rows
+    .defer(d3.json, 'data/neighborhoods.json') //bos
+    .defer(d3.csv, 'data/Boston_Public_Schools_2012-2013.csv', parseSchool) //sch
     .await(dataLoaded);
 
 
     function parse(d){
 	    //if(+d.duration<0) return;
 
-	    return d;
+	    return {
+	    	sex: d.SEX,
+	    	locDescipt: d.LOCATION,
+	    	//locLatLong: parseGeoLocate(d.LOCATION),
+	    	date: parseDate(d.FIO_DATE_CORRECTED),
+	    	race_description: d.DESCRIPTION.replace(')', '').split('('),
+	    	complexion: d.COMPLEXION,
+	    	fio: d.FIOFS_TYPE.split(''),
+	    	outcome: d.OUTCOME.split(''),
+	   		clothes: parseClothes(d.CLOTHING),
+	    	age: +d.AGE_AT_FIO_CORRECTED,
+	    	reason_stop: d.STOP_REASONS,
+	    	reason_fio: d.FIOFS_REASONS
+	    }
+
 	}
 
+		function parseDate(e){
+	
+	    	var day1 = e.split(' ')[0].split('/');
+	        //console.log(day1);
+
+	    	return new Date("20"+day1[2],+day1[1]-1, +day1[0]);
+		}
+
+		function parseClothes(e) {
+			var lc = e.toLowerCase();
+			var nsp = lc.replace(/\s\s+/g, ' ');
+			var clothing_list = nsp.split(', ');
+
+			return clothing_list;
+		}
+
+		//
+		// geolocation example
+		//
+		// function parseGeoLocate(e) {
+
+		// /* This showResult function is used as the callback function*/
+
+		// 	function showResult(result) {
+		// 	    document.getElementById('latitude').value = result.geometry.location.lat();
+		// 	    document.getElementById('longitude').value = result.geometry.location.lng();
+		// 	}
+
+		// 	function getLatitudeLongitude(callback, address) {
+			    
+		// 	    var address = e || '11 Leon Street, Boston, Massachusetts';
+		// 	    // Initialize the Geocoder
+		// 	    geocoder = new google.maps.Geocoder();
+		// 	    if (geocoder) {
+		// 	        geocoder.geocode({
+		// 	            'address': address
+		// 	        }, function (results, status) {
+		// 	            if (status == google.maps.GeocoderStatus.OK) {
+		// 	                callback(results[0]);
+		// 	            }
+		// 	        });
+		// 	    }
+		// 	}
+
+		// 	var button = document.getElementById('btn');
+
+		// 	button.addEventListener("click", function () {
+		// 	    var address = e;
+		// 	    getLatitudeLongitude(showResult, address)
+		// 	});
+
+		// 	return e;
+		// }
+
+	function parseSchool(d) {
+		
+		return {
+			building: d.BLDG_NAME,
+			zip: pad(d.ZIPCODE, 5),
+			school: d.SCH_NAME,
+			type: d.SCH_TYPE,
+			address: parseAddress(d.Location),
+			loc: parseLoc(d.Location)
+		}
+
+	}
+
+		function pad(num, size) {
+		    var s = num+"";
+		    while (s.length < size) s = "0" + s;
+		    return s;
+		}
+
+		function parseLoc(e) {
+			var raw = e;
+			var split = e.split( /[(),]+/ );
+			var latLong = [ +split[2], +split[3] ];
+			//console.log(latLong);
+			return latLong;
+		}
+
+		function parseAddress(e) {
+			var raw = e;
+			var split = e.split( '(' );
+			var address = split[0];
+			//console.log(split);
+			return address;
+		}
 
 //
 //
@@ -139,10 +242,10 @@
 //
 //
 
-function dataLoaded(err, rows, bos){
+function dataLoaded(err, rows, bos, sch){
         
-
- 
+	console.log(rows);
+	console.log(sch);
 
 	//Patrick: cross filter example for later
     //crossfilter and dimensions
