@@ -5,7 +5,7 @@ var get_chart_w = d3.select('#chart').node().clientWidth-50;
 // maybe based off of http://bl.ocks.org/mstanaland/6100713 
 //#chart contains an svg. SVGs do not have the "overflow" styling like other elements. All axes and marks must be on svg.
 var padding = 18;
-var svg2 = d3.select("#chart").append("svg").attr("id","svg2").attr("width",get_chart_w).attr("height",get_chart_h).style("padding", "30px 30px 30px 30px");
+var svg2 = d3.select("#chart").append("svg").attr("id","svg2").attr("width",get_chart_w).attr("height",get_chart_h).style("padding", "10px 30px 30px 30px");
 
 var x = d3.scaleBand()
     .rangeRound([padding, get_chart_w-padding]) //chart_w
@@ -61,8 +61,8 @@ d3.csv("data/chart1data.csv", type, function(error, data) {
 	  .on("mouseover", function() { tooltip.style("display", null); })
 	  .on("mouseout", function() { tooltip.style("display", "none"); })
 	  .on("mousemove", function(d) {
-		var xPosition = d3.mouse(this)[0] - 15;
-		var yPosition = d3.mouse(this)[1] - 25;
+		var xPosition = d3.mouse(this)[0] + 15;
+		var yPosition = d3.mouse(this)[1] + 5;
 		tooltip.attr("transform", "translate(" + xPosition + "," + yPosition + ")");
 		tooltip.select("text").text(roundToOneDecimal(100*(d[1]-d[0])) + '%');
 	  });
