@@ -66,8 +66,8 @@ d3.csv("data/chart1data.csv", type, function(error, data) {
 		  var xPosition = d3.mouse(this)[0] - 15;
 		  var yPosition = d3.mouse(this)[1] - 25;
 		  tooltip.attr("transform", "translate(" + xPosition + "," + yPosition + ")");
-		  console.log(d.x);
-		  tooltip.select("text").text(d.y);
+		  console.log(d.key);
+		  tooltip.select("text").text(roundToOne(100*(d[1]-d[0])) + '%');
 	  });
 
   svg2.append("g")
@@ -103,4 +103,9 @@ function type(d, i, columns) {
   for (i = 1, t = 0; i < columns.length; ++i) t += d[columns[i]] = +d[columns[i]];
   d.total = t;
   return d;
+}
+
+function roundToOne(num) {
+	var rounded = Math.round( num * 10 ) / 10;
+	return rounded;
 }
