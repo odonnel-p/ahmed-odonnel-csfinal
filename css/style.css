@@ -72,6 +72,11 @@ html, body {
     padding: 22px 0 22px 0;
     background-color: #eee;  
 }
+	
+canvas {
+	background: #c9c4bc;
+	display: block;
+}
 
     .filters {
         float:left;

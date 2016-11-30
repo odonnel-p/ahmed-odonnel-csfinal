@@ -6,8 +6,6 @@
 //
 //
 
-
-
 	//global variables
 	var w = d3.select('.plot').node().clientWidth,
     	h = d3.select('.plot').node().clientHeight;
@@ -20,7 +18,7 @@
 	    rad =2;
 
 	//SVG FOR MAP
-	var svg = d3.select( ".plot" )
+/* 	var svg = d3.select( ".plot" )
 	    .append( "svg" )
 	    .attr( "width", width )
 	    .attr( "height", height );
@@ -33,7 +31,7 @@
 	    .on("click", clicked);
 
 	var g = svg.append( "g" );
-	var g2 = svg.append( "g" );
+	var g2 = svg.append( "g" ); */
 
 	//PROJECTION
 	var albersProjection = d3.geoAlbers()
@@ -41,14 +39,15 @@
 	    .rotate( [71.087,0] )
 	    .center( [0, 42.313] )
 	    .translate( [width/2,height/2] );
+		
+	//CANVAS	
+	var canvas = d3.select(".plot").append('canvas');
+	var ctx = canvas.node().getContext('2d');
 
 	//DRAWING THE PATHS OF geoJSON OBJECTS
 	var geoPath = d3.geoPath()
-	    .projection( albersProjection );
-
-
-	    //console.log("DOES THIS EVEN WORK?")
-
+	    .projection( albersProjection )
+		.context(ctx);
 
 //
 //
@@ -75,7 +74,6 @@
     .defer(d3.json, 'data/geocodes/locations_9b.geojson')
     .await(dataLoaded);
 
-
     function parse(d){
 	    //if(+d.duration<0) return;
 
@@ -93,29 +91,25 @@
 	    	reason_stop: d.STOP_REASONS,
 	    	reason_fio: d.FIOFS_REASONS
 	    }
-
 	}
 
-		function parseDate(e){
-	
-	    	var day1 = e.split(' ')[0].split('/');
-	        //console.log(day1);
+	function parseDate(e){
 
-	    	return new Date("20"+day1[2],+day1[1]-1, +day1[0]);
-		}
+		var day1 = e.split(' ')[0].split('/');
+		//console.log(day1);
 
-		function parseClothes(e) {
-			var lc = e.toLowerCase();
-			var nsp = lc.replace(/\s\s+/g, ' ');
-			var clothing_list = nsp.split(', ');
+		return new Date("20"+day1[2],+day1[1]-1, +day1[0]);
+	}
 
-			return clothing_list;
-		}
+	function parseClothes(e) {
+		var lc = e.toLowerCase();
+		var nsp = lc.replace(/\s\s+/g, ' ');
+		var clothing_list = nsp.split(', ');
 
-		
+		return clothing_list;
+	}	
 
 	function parseSchool(d) {
-		
 		return {
 			building: d.BLDG_NAME,
 			zip: pad(d.ZIPCODE, 5),
@@ -124,46 +118,45 @@
 			address: parseAddress(d.Location),
 			loc: parseLoc(d.Location)
 		}
-
 	}
 
-		function pad(num, size) {
-		    var s = num+"";
-		    while (s.length < size) s = "0" + s;
-		    return s;
-		}
+	function pad(num, size) {
+		var s = num+"";
+		while (s.length < size) s = "0" + s;
+		return s;
+	}
 
-		function parseLoc(e) {
-			var raw = e;
-			var split = e.split( /[(),]+/ );
-			var latLong = [ +split[3], +split[2] ];
-			//console.log(latLong);
-			return latLong;
-		}
+	function parseLoc(e) {
+		var raw = e;
+		var split = e.split( /[(),]+/ );
+		var latLong = [ +split[3], +split[2] ];
+		//console.log(latLong);
+		return latLong;
+	}
 
-		function parseAddress(e) {
-			var raw = e;
-			var split = e.split( '(' );
-			var address = split[0];
-			//console.log(split);
-			return address;
-		}
+	function parseAddress(e) {
+		var raw = e;
+		var split = e.split( '(' );
+		var address = split[0];
+		//console.log(split);
+		return address;
+	}
 
-		function conjoin_repeats(_sch) {
-			var prev_bldg_name;
-			_sch.forEach( function (obj, i) {
-				
-				if (obj.building.match(prev_bldg_name) && prev_bldg_name != undefined ) { 
-					//console.log(prev_bldg_name+" MATCHED "+obj.building) 
-					_sch[i-1].school = [_sch[i-1].school, _sch[i].school];
-					//console.log( sch[i-1].school );
-					_sch.splice(i, 1);
-				}
-				prev_bldg_name = obj.building;
-			});
-			//console.log(_sch);
-			return _sch;
-		}
+	function conjoin_repeats(_sch) {
+		var prev_bldg_name;
+		_sch.forEach( function (obj, i) {
+			
+			if (obj.building.match(prev_bldg_name) && prev_bldg_name != undefined ) { 
+				//console.log(prev_bldg_name+" MATCHED "+obj.building) 
+				_sch[i-1].school = [_sch[i-1].school, _sch[i].school];
+				//console.log( sch[i-1].school );
+				_sch.splice(i, 1);
+			}
+			prev_bldg_name = obj.building;
+		});
+		//console.log(_sch);
+		return _sch;
+	}
 //
 //
 // map functions
