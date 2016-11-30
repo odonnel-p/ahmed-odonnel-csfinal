@@ -33,17 +33,21 @@
 	    .on("click", clicked);
 
 	var g = svg.append( "g" );
+	var g2 = svg.append( "g" );
 
 	//PROJECTION
 	var albersProjection = d3.geoAlbers()
-	    .scale( 310000 )
+	    .scale( 240000 )
 	    .rotate( [71.087,0] )
-	    .center( [0, 42.3575] )
+	    .center( [0, 42.313] )
 	    .translate( [width/2,height/2] );
 
 	//DRAWING THE PATHS OF geoJSON OBJECTS
 	var geoPath = d3.geoPath()
 	    .projection( albersProjection );
+
+
+	    //console.log("DOES THIS EVEN WORK?")
 
 
 //
@@ -57,6 +61,18 @@
     .defer(d3.csv,'data/Boston_Police_Department_FIO_CLEANED.csv', parse) //rows
     .defer(d3.json, 'data/neighborhoods.json') //bos
     .defer(d3.csv, 'data/Boston_Public_Schools_2012-2013.csv', parseSchool) //sch
+    .defer(d3.json, 'data/geocodes/locations_0.geojson')
+    .defer(d3.json, 'data/geocodes/locations_1.geojson')
+    .defer(d3.json, 'data/geocodes/locations_2.geojson')
+    .defer(d3.json, 'data/geocodes/locations_3.geojson')
+    .defer(d3.json, 'data/geocodes/locations_4.geojson')
+    .defer(d3.json, 'data/geocodes/locations_5a.geojson')
+    .defer(d3.json, 'data/geocodes/locations_5b.geojson')
+    .defer(d3.json, 'data/geocodes/locations_6.geojson')
+    .defer(d3.json, 'data/geocodes/locations_7.geojson')
+    .defer(d3.json, 'data/geocodes/locations_8.geojson')
+    .defer(d3.json, 'data/geocodes/locations_9a.geojson')
+    .defer(d3.json, 'data/geocodes/locations_9b.geojson')
     .await(dataLoaded);
 
 
@@ -64,9 +80,9 @@
 	    //if(+d.duration<0) return;
 
 	    return {
+	    	ID: d.Id,
 	    	sex: d.SEX,
 	    	locDescipt: d.LOCATION,
-	    	//locLatLong: parseGeoLocate(d.LOCATION),
 	    	date: parseDate(d.FIO_DATE_CORRECTED),
 	    	race_description: d.DESCRIPTION.replace(')', '').split('('),
 	    	complexion: d.COMPLEXION,
@@ -96,43 +112,7 @@
 			return clothing_list;
 		}
 
-		//
-		// geolocation example
-		//
-		// function parseGeoLocate(e) {
-
-		// /* This showResult function is used as the callback function*/
-
-		// 	function showResult(result) {
-		// 	    document.getElementById('latitude').value = result.geometry.location.lat();
-		// 	    document.getElementById('longitude').value = result.geometry.location.lng();
-		// 	}
-
-		// 	function getLatitudeLongitude(callback, address) {
-			    
-		// 	    var address = e || '11 Leon Street, Boston, Massachusetts';
-		// 	    // Initialize the Geocoder
-		// 	    geocoder = new google.maps.Geocoder();
-		// 	    if (geocoder) {
-		// 	        geocoder.geocode({
-		// 	            'address': address
-		// 	        }, function (results, status) {
-		// 	            if (status == google.maps.GeocoderStatus.OK) {
-		// 	                callback(results[0]);
-		// 	            }
-		// 	        });
-		// 	    }
-		// 	}
-
-		// 	var button = document.getElementById('btn');
-
-		// 	button.addEventListener("click", function () {
-		// 	    var address = e;
-		// 	    getLatitudeLongitude(showResult, address)
-		// 	});
-
-		// 	return e;
-		// }
+		
 
 	function parseSchool(d) {
 		
@@ -156,7 +136,7 @@
 		function parseLoc(e) {
 			var raw = e;
 			var split = e.split( /[(),]+/ );
-			var latLong = [ +split[2], +split[3] ];
+			var latLong = [ +split[3], +split[2] ];
 			//console.log(latLong);
 			return latLong;
 		}
@@ -169,6 +149,21 @@
 			return address;
 		}
 
+		function conjoin_repeats(_sch) {
+			var prev_bldg_name;
+			_sch.forEach( function (obj, i) {
+				
+				if (obj.building.match(prev_bldg_name) && prev_bldg_name != undefined ) { 
+					//console.log(prev_bldg_name+" MATCHED "+obj.building) 
+					_sch[i-1].school = [_sch[i-1].school, _sch[i].school];
+					//console.log( sch[i-1].school );
+					_sch.splice(i, 1);
+				}
+				prev_bldg_name = obj.building;
+			});
+			//console.log(_sch);
+			return _sch;
+		}
 //
 //
 // map functions
@@ -188,7 +183,7 @@
 	        return radius
 	    }
 	    if (zoomed == false){
-	        radius = 2;
+	        radius = 5;
 	        return radius
 	    }
 
@@ -205,28 +200,45 @@
 	        k = 3.5;
 	        zoomed = true;
 	        centered = d;
+	        	zoom_squares(5);
 	    } else {
 	        x = width / 2;
 	        y = height / 2;
 	        k = 1;
 	        zoomed = false;
 	        centered = null;
+	        	zoom_squares(5);
 	    }
 
+	    function zoom_squares (_num) {
+		    g.selectAll(".square_school")
+		    	// .attr("width", 2)
+		    	// .attr("height", 2)
+		    	.transition()
+		    		.duration(750)
+		    		.attr("width", _num)
+		    		.attr("height", _num);
+
+		    g.selectAll('stop_n_frisks')
+		    	.transition()
+		    		.duration(750)
+		    		.attr("width", 1)
+		    		.attr("height", 1);
+		}
 	    //console.log(x+', '+y+', '+k)
 
 	    g.selectAll(".neighborhoods")
 	        .classed("active", centered && function(d) { return d === centered; });
 
-	    g.selectAll('.station_dot')
-	        .transition()
-	        .duration(550)
-	        .attr('r', function() {
-	            if(k == 1) {return rad}
-	            else { return rad*k/2 } })
-	        .attr('stroke-width', function(){
-	            if(k == 1) {return rad/2}
-	            else { return rad*k/2 } });
+	    // g.selectAll('.station_dot')
+	    //     .transition()
+	    //     .duration(550)
+	    //     .attr('r', function() {
+	    //         if(k == 1) {return rad}
+	    //         else { return rad*k/2 } })
+	    //     .attr('stroke-width', function(){
+	    //         if(k == 1) {return rad/2}
+	    //         else { return rad*k/2 } });
 
 
 	    g.transition()
@@ -242,10 +254,39 @@
 //
 //
 
-function dataLoaded(err, rows, bos, sch){
+function dataLoaded(err, rows, bos, sch, gj0, gj1, gj2, gj3, gj4, gj5, gj6, gj7, gj8, gj9, gj10, gj11){
         
-	console.log(rows);
-	console.log(sch);
+	//ROWS is stop and frisk data
+	//console.log(rows); // 152230 rows
+	
+	//SCH, SCH2 is boston school locations
+	var sch2 = conjoin_repeats(sch); 
+	//console.log(sch2);
+
+	//GEOS is geojsons with locations for stop and frisks, 
+	var geos = gj0.features
+				.concat(gj1.features)
+				.concat(gj2.features)
+				.concat(gj3.features)
+				.concat(gj4.features)
+				.concat(gj5.features)
+				.concat(gj6.features)
+				.concat(gj7.features)
+				.concat(gj8.features)
+				.concat(gj9.features)
+				.concat(gj10.features)
+				.concat(gj11.features);
+
+	geos.sort(function(a, b) { return a.properties.id - b.properties.id; });
+		
+		geos.forEach( function(_g,i) { 
+			if (_g.geometry.coordinates[0] > -70.922 || _g.geometry.coordinates[0] < -71.195 ||
+				_g.geometry.coordinates[1] > 42.404  || _g.geometry.coordinates[1] < -42.23) 
+			{ geos.splice(i, 1); } 
+		}) //from ~152,230 to 131,676; loss of 20,554 entries (~13.5% loss)
+
+	console.log(geos);
+
 
 	//Patrick: cross filter example for later
     //crossfilter and dimensions
@@ -314,25 +355,59 @@ function dataLoaded(err, rows, bos, sch){
         .on("click", clicked);
     //END OF NEIGHBORHOODS ON MAP
 
+    //APPEND STOP AND FRISKS ON MAP
+	 var radi = 1;
+	 g.selectAll('.stop_n_frisks')
+	 	.data( geos )
+	 	.enter()
+	 	.append('circle')
+	 	.attr('class', 'stop_n_frisks')
+	 	.attr('occurence', function(d,i) { return 'oc'+i })
+		.attr('cx', function(f) {
+            var xy = albersProjection(f.geometry.coordinates);
+            return xy[0]; })
+        .attr('cy', function(f) {
+            var xy = albersProjection(f.geometry.coordinates);
+            return xy[1]; })
+        //.transition(750)
+        .attr('r', radi)
+	        .style('fill', 'rgb(0,0,255)')
+	        .style('stroke-width', 0)
+	        .style('opacity', .1)
+	        .on("click", clicked);
+	 //END STOP AND FRISKS ON MAP
 
-    //Plot dots on map example for later
-    // g.selectAll('.station_dot')
-    //     .data( stations )
-    //     .enter()
-    //     .append('circle')
-    //     .attr('class', 'station_dot')
-    //     .attr('station_num', function(d) { return d.id })
-    //     .attr('cx', function(d) {
-    //         var xy = albersProjection(d.lngLat);
-    //         return xy[0]; })
-    //     .attr('cy', function(d) {
-    //         var xy = albersProjection(d.lngLat);
-    //         return xy[1]; })
-    //     .attr('r', rad)
-    //     .style('fill', 'rgb(32,96,255)')
-    //     .style('stroke-width', 0)
-    //     .style('opacity',.9)
-    //     .on('click', set_station_num)
+
+    //APPEND SCHOOLS ON MAP
+    var square = 5;
+    //Plot schools as squares
+    g.selectAll('.square_school')
+        .data( sch2 )
+        .enter()
+        .append('rect')
+        .attr('class', 'square_school')
+        .attr('school_num', function(d,i) { return 's'+i })
+        .attr('x', function(f) {
+         	//console.log(f.loc[0]+", "+f.loc[1])
+            var xy = albersProjection(f.loc);
+            //console.log(xy[0]+", "+xy[1])
+            return xy[0]; })
+        .attr('y', function(f) {
+            var xy = albersProjection(f.loc);
+            return xy[1]; })
+        //.transition(750)
+        .attr('width', square)
+        .attr('height', square)
+	        .style('fill', 'rgb(255,0,0)')
+	        .style('stroke-width', 0)
+	        .on("click", clicked);
+	//END SCHOOLS ON MAP
+
+
+	 
+
 
 } //end of dataLoaded
+
+
 
