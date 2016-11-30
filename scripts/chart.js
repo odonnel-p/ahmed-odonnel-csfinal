@@ -26,8 +26,6 @@ var stack = d3.stack()
 d3.csv("data/chart1data.csv", type, function(error, data) {
   if (error) throw error;
 
-  data.sort(function(a, b) { return b[data.columns[1]] / b.total - a[data.columns[1]] / a.total; });
-
   x.domain(data.map(function(d) { return d.Year; }));
   z.domain(data.columns.slice(1));
 
@@ -37,6 +35,23 @@ d3.csv("data/chart1data.csv", type, function(error, data) {
       .append("g")
       .attr("class", "serie")
       .attr("fill", function(d) { return z(d.key); });
+	  
+  var tooltip = svg2.append("g")
+	.attr("class","tooltip")
+	.style("display", "none");
+	  
+  tooltip.append("rect")
+	.attr("width", 30)
+    .attr("height", 20)
+    .attr("fill", "white")
+    .style("opacity", 0.5);
+
+  tooltip.append("text")
+    .attr("x", 15)
+    .attr("dy", "1.2em")
+    .style("text-anchor", "middle")
+    .attr("font-size", "12px")
+    .attr("font-weight", "bold");		  
 
   serie.selectAll("rect")
     .data(function(d) { return d; })
@@ -44,15 +59,24 @@ d3.csv("data/chart1data.csv", type, function(error, data) {
       .attr("x", function(d) { return x(d.data.Year); })
       .attr("y", function(d) { return y(d[1]); })
       .attr("height", function(d) { return y(d[0]) - y(d[1]); })
-      .attr("width", x.bandwidth());
+      .attr("width", x.bandwidth())
+	  .on("mouseover", function() { tooltip.style("display", null); })
+	  .on("mouseout", function() { tooltip.style("display","none"); })
+	  .on("mousemove", function(d) {
+		  var xPosition = d3.mouse(this)[0] - 15;
+		  var yPosition = d3.mouse(this)[1] - 25;
+		  tooltip.attr("transform", "translate(" + xPosition + "," + yPosition + ")");
+		  console.log(d.x);
+		  tooltip.select("text").text(d.y);
+	  });
 
   svg2.append("g")
-      .attr("class", "axis axis--x")
-      .attr("transform", "translate(0," + get_chart_h + ")")
-      .call(d3.axisBottom(x));
+    .attr("class", "axis axis--x")
+    .attr("transform", "translate(0," + get_chart_h + ")")
+    .call(d3.axisBottom(x));
 
   //ticks and labels for percentage (on the left)
-  svg2.append("g")
+/*   svg2.append("g")
       .attr("class", "axis axis--y")
       .attr("transform", "translate(28,0)")
       .call(d3.axisLeft(y).ticks(10, "%"));
@@ -65,14 +89,14 @@ d3.csv("data/chart1data.csv", type, function(error, data) {
   legend.append("line")
       .attr("x1", -6)
       .attr("x2", 6)
-      .attr("stroke", "#000");
+      .attr("stroke", "#000"); */
 
-  legend.append("text")
-      .attr("x", 9)
-      .attr("dy", "0.35em")
-      .attr("fill", "#000")
-      .style("font", "10px sans-serif")
-      .text(function(d) { return d.key; });
+/*   legend.append("text")
+    .attr("x", 9)
+    .attr("dy", "0.35em")
+    .attr("fill", "#000")
+    .style("font", "10px sans-serif")
+    .text(function(d) { return d.key; }); */
 });
 
 function type(d, i, columns) {
