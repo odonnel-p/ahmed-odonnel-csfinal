@@ -35,25 +35,26 @@ d3.csv("data/chart1data.csv", type, function(error, data) {
       .attr("fill", function(d) { return z(d.key); });
 	  
   var tooltip = svg2.append("g")
-	.attr("class","tooltip")
+	.attr("class", "tooltip")
 	.style("display", "none");
 	  
-  tooltip.append("rect")
-	.attr("width", 30)
+/*   tooltip.append("rect")
+	.attr("width", 100)
     .attr("height", 20)
     .attr("fill", "white")
-    .style("opacity", 0.5);
+    .style("opacity", 0.5); */
 
   tooltip.append("text")
     .attr("x", 15)
     .attr("dy", "1.2em")
     .style("text-anchor", "middle")
+	.style("text-align", "center")
     .attr("font-size", "12px")
     .attr("font-weight", "bold");		  
 
   serie.selectAll("rect")
     .data(function(d) { return d; })
-    .enter().append("rect")
+	.enter().append("rect")
       .attr("x", function(d) { return x(d.data.Year); })
       .attr("y", function(d) { return y(d[1]); })
       .attr("height", function(d) { return y(d[0]) - y(d[1]); })
@@ -61,10 +62,12 @@ d3.csv("data/chart1data.csv", type, function(error, data) {
 	  .on("mouseover", function() { tooltip.style("display", null); })
 	  .on("mouseout", function() { tooltip.style("display", "none"); })
 	  .on("mousemove", function(d) {
-		var xPosition = d3.mouse(this)[0] + 15;
-		var yPosition = d3.mouse(this)[1] + 5;
+		var xPosition = d3.mouse(this)[0] + 20;
+		var yPosition = d3.mouse(this)[1] + 10;
+		var elements = document.querySelectorAll(':hover');
+		var race = elements[7].__data__.key;
 		tooltip.attr("transform", "translate(" + xPosition + "," + yPosition + ")");
-		tooltip.select("text").text(roundToOneDecimal(100*(d[1]-d[0])) + '%');
+		tooltip.select("text").text(race + ": " + roundToOneDecimal(100*(d[1]-d[0])) + '%');
 	  });
 
   svg2.append("g")
