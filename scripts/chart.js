@@ -1,12 +1,21 @@
-var svg = d3.select("#chart").append("svg").attr("id","svg1").attr("width",400).attr("height",250);
+//svg and g, g2 might be in use in map.js --PJO
+var get_chart_h = d3.select('#chart').node().clientHeight-50;
+var get_chart_w = d3.select('#chart').node().clientWidth-50;
+
+//NEXT STEP: Take off both y-axes and make them a tool tip.
+// maybe based off of http://bl.ocks.org/mstanaland/6100713 
+
+//#chart contains an svg. SVGs do not have the "overflow" styling like other elements. All axes and marks must be on svg.
+var padding = 18;
+var svg2 = d3.select("#chart").append("svg").attr("id","svg2").attr("width",get_chart_w).attr("height",get_chart_h).style("padding", "30px 30px 30px 30px");
 
 var x = d3.scaleBand()
-    .rangeRound([0, width])
-    .padding(0.1)
+    .rangeRound([padding, get_chart_w-padding]) //chart_w
+    .padding(.4)
     .align(0.1);
 
 var y = d3.scaleLinear()
-    .rangeRound([height, 0]);
+    .rangeRound([get_chart_h, 0]); //chart_h
 
 var z = d3.scaleOrdinal()
     .range(["#98abc5", "#8a89a6", "#7b6888", "#6b486b", "#a05d56", "#d0743c", "#ff8c00"]);
@@ -22,9 +31,10 @@ d3.csv("data/chart1data.csv", type, function(error, data) {
   x.domain(data.map(function(d) { return d.Year; }));
   z.domain(data.columns.slice(1));
 
-  var serie = g.selectAll(".serie")
+  var serie = svg2.selectAll(".serie")
     .data(stack.keys(data.columns.slice(1))(data))
-    .enter().append("g")
+    .enter()
+      .append("g")
       .attr("class", "serie")
       .attr("fill", function(d) { return z(d.key); });
 
@@ -36,18 +46,21 @@ d3.csv("data/chart1data.csv", type, function(error, data) {
       .attr("height", function(d) { return y(d[0]) - y(d[1]); })
       .attr("width", x.bandwidth());
 
-  g.append("g")
+  svg2.append("g")
       .attr("class", "axis axis--x")
-      .attr("transform", "translate(0," + height + ")")
+      .attr("transform", "translate(0," + get_chart_h + ")")
       .call(d3.axisBottom(x));
 
-  g.append("g")
+  //ticks and labels for percentage (on the left)
+  svg2.append("g")
       .attr("class", "axis axis--y")
+      .attr("transform", "translate(28,0)")
       .call(d3.axisLeft(y).ticks(10, "%"));
 
+  //ticks and labels for race (on the right)
   var legend = serie.append("g")
       .attr("class", "legend")
-      .attr("transform", function(d) { var d = d[d.length - 1]; return "translate(" + (x(d.data.Year) + x.bandwidth()) + "," + ((y(d[0]) + y(d[1])) / 2) + ")"; });
+      .attr("transform", function(d) { var d = d[d.length - 1]; console.log(d); return "translate(" + (x(d.data.Year) + x.bandwidth()) + "," + ((y(d[0]) + y(d[1])) / 2) + ")"; });
 
   legend.append("line")
       .attr("x1", -6)
