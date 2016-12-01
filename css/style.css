@@ -199,6 +199,11 @@ h1, h2, p {
     background: none;
 }
 
+.toolTip {
+	font-family: Raleway;
+	font-weight: 700;
+}
+
 /*------------ Map ------------*/
 #plot{
     width: 65%;

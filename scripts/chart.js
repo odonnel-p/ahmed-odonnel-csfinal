@@ -35,7 +35,7 @@ d3.csv("data/chart1data.csv", type, function(error, data) {
       .attr("fill", function(d) { return z(d.key); });
 	  
   var tooltip = svg2.append("g")
-	.attr("class", "tooltip")
+	.attr("class", "toolTip")
 	.style("display", "none");
 	  
 /*   tooltip.append("rect")
