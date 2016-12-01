@@ -41,7 +41,10 @@
 	    .translate( [width/2,height/2] );
 		
 	//CANVAS	
-	var canvas = d3.select(".plot").append('canvas');
+	var canvas = d3.select(".plot")
+		.append('canvas')
+		.attr( "width", width )
+	    .attr( "height", height );
 	var ctx = canvas.node().getContext('2d');
 
 	//DRAWING THE PATHS OF geoJSON OBJECTS
@@ -58,20 +61,9 @@
 
 	d3.queue()
     .defer(d3.csv,'data/Boston_Police_Department_FIO_CLEANED.csv', parse) //rows
-    .defer(d3.json, 'data/neighborhoods.json') //bos
+    //.defer(d3.json, 'data/neighborhoods.json') //bos
     .defer(d3.csv, 'data/Boston_Public_Schools_2012-2013.csv', parseSchool) //sch
-    .defer(d3.json, 'data/geocodes/locations_0.geojson')
-    .defer(d3.json, 'data/geocodes/locations_1.geojson')
-    .defer(d3.json, 'data/geocodes/locations_2.geojson')
-    .defer(d3.json, 'data/geocodes/locations_3.geojson')
-    .defer(d3.json, 'data/geocodes/locations_4.geojson')
-    .defer(d3.json, 'data/geocodes/locations_5a.geojson')
-    .defer(d3.json, 'data/geocodes/locations_5b.geojson')
-    .defer(d3.json, 'data/geocodes/locations_6.geojson')
-    .defer(d3.json, 'data/geocodes/locations_7.geojson')
-    .defer(d3.json, 'data/geocodes/locations_8.geojson')
-    .defer(d3.json, 'data/geocodes/locations_9a.geojson')
-    .defer(d3.json, 'data/geocodes/locations_9b.geojson')
+    .defer(d3.json, 'data/geocodes/boston_topo.json') //topo
     .await(dataLoaded);
 
     function parse(d){
@@ -182,7 +174,7 @@
 
 	}
 
-	function clicked(d) {
+	/* function clicked(d) {
 	    //console.log(x+', '+y+', '+k)
 	    var x, y, k;
 
@@ -238,7 +230,7 @@
 	        .duration(750)
 	        .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")scale(" + k + ")translate(" + -x + "," + -y + ")")
 	    //.style("stroke-width", 1.5 / k + "px");
-	}
+	} */
 
 
 //
@@ -247,7 +239,7 @@
 //
 //
 
-function dataLoaded(err, rows, bos, sch, gj0, gj1, gj2, gj3, gj4, gj5, gj6, gj7, gj8, gj9, gj10, gj11){
+function dataLoaded(err, rows, sch, topo){
         
 	//ROWS is stop and frisk data
 	//console.log(rows); // 152230 rows
@@ -256,7 +248,7 @@ function dataLoaded(err, rows, bos, sch, gj0, gj1, gj2, gj3, gj4, gj5, gj6, gj7,
 	var sch2 = conjoin_repeats(sch); 
 	//console.log(sch2);
 
-	//GEOS is geojsons with locations for stop and frisks, 
+/* 	//GEOS is geojsons with locations for stop and frisks, 
 	var geos = gj0.features
 				.concat(gj1.features)
 				.concat(gj2.features)
@@ -268,18 +260,21 @@ function dataLoaded(err, rows, bos, sch, gj0, gj1, gj2, gj3, gj4, gj5, gj6, gj7,
 				.concat(gj8.features)
 				.concat(gj9.features)
 				.concat(gj10.features)
-				.concat(gj11.features);
+				.concat(gj11.features); */
+				
+	var geos = topojson.feature(topo,topo.objects.locations);
 
-	geos.sort(function(a, b) { return a.properties.id - b.properties.id; });
+/* 	geos.sort(function(a, b) { return a.properties.id - b.properties.id; });
 		
-		geos.forEach( function(_g,i) { 
-			if (_g.geometry.coordinates[0] > -70.922 || _g.geometry.coordinates[0] < -71.195 ||
-				_g.geometry.coordinates[1] > 42.404  || _g.geometry.coordinates[1] < -42.23) 
-			{ geos.splice(i, 1); } 
-		}) //from ~152,230 to 131,676; loss of 20,554 entries (~13.5% loss)
+	geos.forEach( function(_g,i) { 
+		if (_g.geometry.coordinates[0] > -70.922 || _g.geometry.coordinates[0] < -71.195 ||
+			_g.geometry.coordinates[1] > 42.404  || _g.geometry.coordinates[1] < -42.23) 
+		{ geos.splice(i, 1); } 
+	}) //from ~152,230 to 131,676; loss of 20,554 entries (~13.5% loss)
 
-	console.log(geos);
-
+	//console.log(geos); */
+	
+	var neighborhoods = topojson.mesh(topo,topo.objects.neighborhoods);
 
 	//Patrick: cross filter example for later
     //crossfilter and dimensions
@@ -338,18 +333,23 @@ function dataLoaded(err, rows, bos, sch, gj0, gj1, gj2, gj3, gj4, gj5, gj6, gj7,
 
     
     //APPEND NEIGHBORHOODS ON MAP
-    g.selectAll( ".boston" )
+	ctx.beginPath();
+	geoPath(neighborhoods);
+	ctx.stroke();
+/*     g.selectAll( ".boston" )
         .data( bos.features )
         .enter()
         .append('path')
         .attr('class', 'boston neighborhoods')
         .attr( 'd', geoPath )
         //.style('fill', '#888') //boston
-        .on("click", clicked);
+        .on("click", clicked); */
     //END OF NEIGHBORHOODS ON MAP
 
     //APPEND STOP AND FRISKS ON MAP
-	 var radi = 1;
+/* 	var circle = d3.geoCircle();
+	ctx.beginPath(); */
+/* 	 var radi = 1;
 	 g.selectAll('.stop_n_frisks')
 	 	.data( geos )
 	 	.enter()
@@ -367,12 +367,12 @@ function dataLoaded(err, rows, bos, sch, gj0, gj1, gj2, gj3, gj4, gj5, gj6, gj7,
 	        .style('fill', 'rgb(0,0,255)')
 	        .style('stroke-width', 0)
 	        .style('opacity', .1)
-	        .on("click", clicked);
+	        .on("click", clicked); */
 	 //END STOP AND FRISKS ON MAP
 
 
     //APPEND SCHOOLS ON MAP
-    var square = 5;
+/*     var square = 5;
     //Plot schools as squares
     g.selectAll('.square_school')
         .data( sch2 )
@@ -393,7 +393,7 @@ function dataLoaded(err, rows, bos, sch, gj0, gj1, gj2, gj3, gj4, gj5, gj6, gj7,
         .attr('height', square)
 	        .style('fill', 'rgb(255,0,0)')
 	        .style('stroke-width', 0)
-	        .on("click", clicked);
+	        .on("click", clicked); */
 	//END SCHOOLS ON MAP
 
 
