@@ -45,6 +45,7 @@
 		.append('canvas')
 		.attr( "width", width )
 	    .attr( "height", height );
+
 	var ctx = canvas.node().getContext('2d');
 
 	//DRAWING THE PATHS OF geoJSON OBJECTS
@@ -347,10 +348,11 @@ function dataLoaded(err, rows, sch, topo){
     //END OF NEIGHBORHOODS ON MAP
 
     //APPEND STOP AND FRISKS ON MAP
- 	var circle = d3.geoCircle();
 	ctx.beginPath();
 	geoPath(geos);
-    ctx.stroke();
+	ctx.globalAlpha=0.3;
+	ctx.fillStyle = 'red';
+	ctx.fill();
 /* 	 var radi = 1;
 	 g.selectAll('.stop_n_frisks')
 	 	.data( geos )
