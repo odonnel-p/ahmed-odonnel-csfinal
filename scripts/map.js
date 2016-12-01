@@ -347,8 +347,10 @@ function dataLoaded(err, rows, sch, topo){
     //END OF NEIGHBORHOODS ON MAP
 
     //APPEND STOP AND FRISKS ON MAP
-/* 	var circle = d3.geoCircle();
-	ctx.beginPath(); */
+ 	var circle = d3.geoCircle();
+	ctx.beginPath();
+	geoPath(geos);
+    ctx.stroke();
 /* 	 var radi = 1;
 	 g.selectAll('.stop_n_frisks')
 	 	.data( geos )
