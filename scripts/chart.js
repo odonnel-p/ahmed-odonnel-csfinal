@@ -32,7 +32,7 @@ d3.csv("data/chart1data.csv", type, function(error, data) {
 	  
   var tooltip = svg2.append("g")
 	.attr("class", "toolTip")
-	.style("display", "none");
+	.style("display", null);
 
   tooltip.append("text")
     .attr("x", 15)
@@ -50,24 +50,28 @@ d3.csv("data/chart1data.csv", type, function(error, data) {
       .attr("height", function(d) { return y(d[0]) - y(d[1]); })
       .attr("width", x.bandwidth())
 	  .on("mouseover", function() { 
-		tooltip.style("display", null);
-		d3.select(this)
-			.attr("stroke","red")
-			.attr("stroke-width", 2);
-      })
+          console.log("Mouseover");
+      		tooltip.style("display", null);
+      		d3.select(this)
+      			.attr("stroke","red")
+      			.attr("stroke-width", 2);
+            })
 	  .on("mouseout", function() { 
-		tooltip.style("display", "none");
-		d3.select(this)
-			.attr("stroke","none");
-      })
+          console.log("mouseout");
+      		tooltip.style("display", "none");
+      		d3.select(this)
+      			.attr("stroke","none");
+            })
 	  .on("mousemove", function(d) {
-		var xPosition = d3.mouse(this)[0] - 10;
-		var yPosition = d3.mouse(this)[1] + 16;
-		var elements = document.querySelectorAll(':hover');
-		var race = elements[7].__data__.key;
-		tooltip.attr("transform", "translate(" + xPosition + "," + yPosition + ")");
-		tooltip.select("text").text(race + ": " + roundToOneDecimal(100*(d[1]-d[0])) + '%');
-	  });
+          console.log("mousemove");
+      		var xPosition = d3.mouse(this)[0] - 10;
+      		var yPosition = d3.mouse(this)[1] + 16;
+      		var elements = document.querySelectorAll(':hover');
+          console.log(elements);
+      		var race = elements[6].__data__.key;
+      		tooltip.attr("transform", "translate(" + xPosition + "," + yPosition + ")");
+      		tooltip.select("text").text(race + ": "  + roundToOneDecimal(100*(d[1]-d[0])) + '%');
+      	  });
 
   svg2.append("g")
     .attr("class", "axis axis--x")
