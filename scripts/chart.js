@@ -62,8 +62,8 @@ d3.csv("data/chart1data.csv", type, function(error, data) {
 	  .on("mouseover", function() { tooltip.style("display", null); })
 	  .on("mouseout", function() { tooltip.style("display", "none"); })
 	  .on("mousemove", function(d) {
-		var xPosition = d3.mouse(this)[0] + 20;
-		var yPosition = d3.mouse(this)[1] + 10;
+		var xPosition = d3.mouse(this)[0] - 10;
+		var yPosition = d3.mouse(this)[1] + 16;
 		var elements = document.querySelectorAll(':hover');
 		var race = elements[7].__data__.key;
 		tooltip.attr("transform", "translate(" + xPosition + "," + yPosition + ")");
