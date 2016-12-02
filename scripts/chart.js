@@ -59,8 +59,17 @@ d3.csv("data/chart1data.csv", type, function(error, data) {
       .attr("y", function(d) { return y(d[1]); })
       .attr("height", function(d) { return y(d[0]) - y(d[1]); })
       .attr("width", x.bandwidth())
-	  .on("mouseover", function() { tooltip.style("display", null); })
-	  .on("mouseout", function() { tooltip.style("display", "none"); })
+	  .on("mouseover", function() { 
+		tooltip.style("display", null);
+		d3.select(this)
+			.attr("stroke","red")
+			.attr("stroke-width", 2);
+      })
+	  .on("mouseout", function() { 
+		tooltip.style("display", "none");
+		d3.select(this)
+			.attr("stroke","none");
+      })
 	  .on("mousemove", function(d) {
 		var xPosition = d3.mouse(this)[0] - 10;
 		var yPosition = d3.mouse(this)[1] + 16;
