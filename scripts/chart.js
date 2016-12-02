@@ -1,9 +1,5 @@
 var get_chart_h = d3.select('#chart').node().clientHeight-50;
 var get_chart_w = d3.select('#chart').node().clientWidth-50;
-
-//NEXT STEP: Take off both y-axes and make them a tool tip.
-// maybe based off of http://bl.ocks.org/mstanaland/6100713 
-//#chart contains an svg. SVGs do not have the "overflow" styling like other elements. All axes and marks must be on svg.
 var padding = 18;
 var svg2 = d3.select("#chart").append("svg").attr("id","svg2").attr("width",get_chart_w).attr("height",get_chart_h).style("padding", "10px 30px 30px 30px");
 
@@ -37,12 +33,6 @@ d3.csv("data/chart1data.csv", type, function(error, data) {
   var tooltip = svg2.append("g")
 	.attr("class", "toolTip")
 	.style("display", "none");
-	  
-/*   tooltip.append("rect")
-	.attr("width", 100)
-    .attr("height", 20)
-    .attr("fill", "white")
-    .style("opacity", 0.5); */
 
   tooltip.append("text")
     .attr("x", 15)
@@ -50,7 +40,7 @@ d3.csv("data/chart1data.csv", type, function(error, data) {
     .style("text-anchor", "middle")
 	.style("text-align", "center")
     .attr("font-size", "12px")
-    .attr("font-weight", "bold");		  
+    .attr("font-weight", "bold");	
 
   serie.selectAll("rect")
     .data(function(d) { return d; })
@@ -83,29 +73,6 @@ d3.csv("data/chart1data.csv", type, function(error, data) {
     .attr("class", "axis axis--x")
     .attr("transform", "translate(0," + get_chart_h + ")")
     .call(d3.axisBottom(x));
-
-  //ticks and labels for percentage (on the left)
-/*   svg2.append("g")
-      .attr("class", "axis axis--y")
-      .attr("transform", "translate(28,0)")
-      .call(d3.axisLeft(y).ticks(10, "%"));
-
-  //ticks and labels for race (on the right)
-  var legend = serie.append("g")
-      .attr("class", "legend")
-      .attr("transform", function(d) { var d = d[d.length - 1]; console.log(d); return "translate(" + (x(d.data.Year) + x.bandwidth()) + "," + ((y(d[0]) + y(d[1])) / 2) + ")"; });
-
-  legend.append("line")
-      .attr("x1", -6)
-      .attr("x2", 6)
-      .attr("stroke", "#000"); */
-
-/*   legend.append("text")
-    .attr("x", 9)
-    .attr("dy", "0.35em")
-    .attr("fill", "#000")
-    .style("font", "10px sans-serif")
-    .text(function(d) { return d.key; }); */
 });
 
 function type(d, i, columns) {
