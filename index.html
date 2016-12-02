@@ -6,9 +6,10 @@
         <meta name="keywords" content="HTML,CSS,JavaScript,311,datavis,map,policing,race, Boston, stop ">
         <meta name="author" content="Alex Ahmed,Patrick O'Donnel">
 
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
 
         <!--Fonts-->
-        <link href="https://fonts.googleapis.com/css?family=Raleway:300,300i,400,500,500i,700" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css?family=Raleway:200,200i,400,500,500i,700" rel="stylesheet">
 
         <!--Stylesheets-->
         <link rel="stylesheet" href="css/style.css"/>
@@ -16,74 +17,109 @@
 
     <body>
         <div id="background">
+            <div id="f">
+                <div id="fixed_until"> 
+                        <h1 class="title">Stop and Frisk: Boston</h1>
+                        <h2 class="subtitle where">where, when and who</h2>
+                        <div class="title_legend"> 
+                            <div class="row">
+                                <div class="icons school_icon"></div>
+                                <p class="tiny">Location of School</p>
+                            </div>
+                            <div class="row">
+                                <div class="icons snf_icon"></div>
+                                <p class="tiny">Stop and Frisk Incident(s)</p>
+                            </div>
+                        </div>
+                    </div> 
+            </div>
+
+            <div id="ff">
+                <div id="chart" class="chart"></div>
+                <div id="chart_label">
+                    <p class="tiny2">Stop and Frisk Incidents by Race</p>
+                </div>
+            </div>
+
+            <div id="fff">
+                <!-- <div id="in_fff"></div> -->
+            </div>
+
+            <!--<div class="movin" id="movin3">FAKE TITLE</div>-->
             <div id="containerintro">
                 
-                <div class="columns columnC">
-                    <div id="chart" class="chart">
-					</div>
-                </div>
+                <div class="columns columnA">
+                    
+                </div> 
+                
 
                 <div class="columns columnB">
-				
-                    <p class="text p1">Stop-and-frisk is a controversial police practice that can include observing, stopping, interrogating, frisking, or searching an individual. The New York City, Philadelphia, and Los Angeles police departments have cooperated with court-mandated releases of datasets detailing stop-and-frisk occurrences. Analyses have revealed that stop-and-frisk is <a target="_blank" href="http://sunlightfoundation.com/2015/03/02/stop-and-frisk-in-4-cities-the-importance-of-open-police-data-2/">racially discriminatory</a> and that it <a target="_blank" href="http://www.nyclu.org/node/1598">does not lower crime rates</a>, which led to an increase in accountability and a dramatic reduction in the practice with minimal impact on crime rates.</p>
+				    
+                        <p class="text p1 dd">Stop-and-frisk is a controversial police practice that can include observing, stopping, interrogating, frisking, or searching an individual. The New York City, Philadelphia, and Los Angeles police departments have cooperated with court-mandated releases of datasets detailing stop-and-frisk occurrences. Analyses have revealed that stop-and-frisk is <a target="_blank" href="http://sunlightfoundation.com/2015/03/02/stop-and-frisk-in-4-cities-the-importance-of-open-police-data-2/">racially discriminatory</a> and that it <a target="_blank" href="http://www.nyclu.org/node/1598">does not lower crime rates</a>, which led to an increase in accountability and a dramatic reduction in the practice with minimal impact on crime rates.</p>
 
-                    <p class="text p2">In 2014, the Boston Police department released a dataset of stops-and-frisks that took place between 2007-2010. The ACLU of Massachusetts <a target="_blank" href="https://aclum.org/our-work/aclum-issues/racial-justice/ending-racist-stop-and-frisk/">reported</a> that these police actions followed a familiar pattern: that they were disproportionately targeting Black men. Police Commissioner William Evans <a target="_blank" href="https://www.bostonglobe.com/metro/2015/07/03/boston-police-institute-new-antibias-policies-after-critical-report-policing-minority-communities/7PxecpL5o5qCWDEQ5x0HzL/story.html">publicly responded</a> to the ACLU report in July of 2015, saying that “police officers were not motivated by racial bias.” He further stated that the BPD will revise the stop-and-frisk guidelines to prohibit stops based on race, as part of “a new Bias-Free Policing Policy, which forbids policing based on characteristics such as race and gender.”</p>
+                        <p class="text p2 dd">In 2014, the Boston Police department released a dataset of stops-and-frisks that took place between 2007-2010. The ACLU of Massachusetts <a target="_blank" href="https://aclum.org/our-work/aclum-issues/racial-justice/ending-racist-stop-and-frisk/">reported</a> that these police actions followed a familiar pattern: that they were disproportionately targeting Black men. Police Commissioner William Evans <a target="_blank" href="https://www.bostonglobe.com/metro/2015/07/03/boston-police-institute-new-antibias-policies-after-critical-report-policing-minority-communities/7PxecpL5o5qCWDEQ5x0HzL/story.html">publicly responded</a> to the ACLU report in July of 2015, saying that “police officers were not motivated by racial bias.” He further stated that the BPD will revise the stop-and-frisk guidelines to prohibit stops based on race, as part of “a new Bias-Free Policing Policy, which forbids policing based on characteristics such as race and gender.”</p>
 
-                    <p class="text p2">The BPD has pledged to regularly release its data for public review, and in January of 2016 <a target="_blank" href="https://aclum.org/uncategorized/boston-police-release-more-stop-and-frisk-data/">released</a> stop-and-frisk data for the years 2011-2015. Data spanning the time after Bias-Free Policing Policy was announced (summer 2015 to present) are currently unavailable. The BPD <a target="_blank" href="https://aclum.org/wp-content/uploads/2016/01/2016_01_27-Ltr-from-Nicole-Taub.pdf">stated</a> in a letter to the ACLU that the data is “maintained in a different format” and that additional review is needed.</p>
+                        <p class="text p2 dd">The BPD has pledged to regularly release its data for public review, and in January of 2016 <a target="_blank" href="https://aclum.org/uncategorized/boston-police-release-more-stop-and-frisk-data/">released</a> stop-and-frisk data for the years 2011-2015. Data spanning the time after Bias-Free Policing Policy was announced (summer 2015 to present) are currently unavailable. The BPD <a target="_blank" href="https://aclum.org/wp-content/uploads/2016/01/2016_01_27-Ltr-from-Nicole-Taub.pdf">stated</a> in a letter to the ACLU that the data is “maintained in a different format” and that additional review is needed.</p>
 
-                    <p class="text p2">The interactive map below allows you to explore the data and zoom into neighborhoods by clicking. We see that racial bias is consistent throughout these years, and that stop-and-frisks are concentrated in communities of color.</p>
+                        <p class="text p2 dd">The interactive map below allows you to explore the data and zoom into neighborhoods by clicking. We see that racial bias is consistent throughout these years, and that stop-and-frisks are concentrated in communities of color.</p>
+
 
                 </div>
 
-                <div class="columns columnA">
-                    <h1 class="title">Stop and Frisk: Boston</h1>
-                    <h2 class="subtitle where">where, when and who</h2>
-                </div> 
+                <div class="columns columnC">
+                    
+                </div>
+
+
             </div>
 
             <div id="containermap">
-                <div class="filters"></div>
                 <div class="plot"></div>
             </div>
 
             <div id="containeroutro">
-                <div class="columns columnC restrictC">
-                    <!--<div class="numbers">
-                        <p class="n1 extra_line">a.</p>
-
-                        <p class="n1">b.</p>
-
-                        <p class="n1">c.</p>
-
-
-                        <p class="n1 extra_line">1.</p>
-
-                        <p class="n1">2.</p> 
-                    </div>-->
-
-                    <div class="next_numbers">
-                        <p class="text p1">Alex Ahmed<br>ahmed.al@husky.neu.edu</p>
-
-                        <p class="text p1">Patrick J. O'Donnel<br>odonnel.p@husky.neu.edu</p>
-
-                        <p class="text p1 extra_line">Baysmith, Robert L. Lorem ipsum dolor sit amet, consectetur adipiscing elit, 2009.</p>
-
-                        <p class="text p1">Grandier, Mary. Uomocapitus lacinia diam erat, ullamcorper pretium massa posuere vitae, 2016. </p>
-
-                        <p class="text p1">Kinsey, Alfred. Maecenas eget tristique ante, 1998.</p>
-
-                        <p class="text p1 extra_line">Allen, Troy. Phasellus a arcu et nunc finibus pharetra. Mauris a posuere nulla, 2015.</p>
-
-                        <p class="text p1">Missau-Nollier, Claudia. Nulla nibh quam, consectetur sit amet velit sed, tempor finibus risus, 2008.</p> 
-                    </div>
+                <div class="columns columnA2">
                 </div>
 
-                <div class="columns columnB">
-                    <h2 class="subtitle">design</h2>
-                    <h2 class="subtitle subtitle_align1">data sources</h2>
-                    <h2 class="subtitle subtitle_align2">references</h2>
+                
+                
+                <div class="columns columnBe">
+                        
+                        <div class="design_row">
+                            <h2 class="subtitle st1">design</h2>
+                            <div class="contains_text">
+                                <p class="text p1">Alex Ahmed<br>ahmed.al@husky.neu.edu</p>
+                                <p class="text p1 pp">Patrick J. O'Donnel<br>odonnel.p@husky.neu.edu</p>
+                            </div>
+                        </div>
+                        <div class="data_row pp"> 
+                            <h2 class="subtitle st2">data sources</h2>
+                            <div class="contains_text">
+                                <p class="text p1">Baysmith, Robert L. Lorem ipsum dolor sit amet, consectetur adipiscing elit, 2009.</p>
+
+                                <p class="text p1 pp">Grandier, Mary. Uomocapitus lacinia diam erat, ullamcorper pretium massa posuere vitae, 2016. </p>
+
+                                <p class="text p1 pp">Kinsey, Alfred. Maecenas eget tristique ante, 1998.</p>
+                            </div>
+                        </div>
+                        <div class="additional_row pp">
+                            <h2 class="subtitle st3">additional reading</h2>
+                            <div class="contains_text">
+                                <p class="text p1 ">Baysmith, Robert L. Lorem ipsum dolor sit amet, consectetur adipiscing elit, 2009.</p>
+
+                                <p class="text p1 pp">Grandier, Mary. Uomocapitus lacinia diam erat, ullamcorper pretium massa posuere vitae, 2016. </p>
+
+                                <p class="text p1 pp">Kinsey, Alfred. Maecenas eget tristique ante, 1998.</p>
+
+                                <p class="text p1 pp">Allen, Troy. Phasellus a arcu et nunc finibus pharetra. Mauris a posuere nulla, 2015.</p>
+
+                                <p class="text p1 pp">Missau-Nollier, Claudia. Nulla nibh quam, consectetur sit amet velit sed, tempor finibus risus, 2008.</p>
+                            </div>
+                        </div>
+
                 </div>
-                <div class="columns columnA"></div>
+                
+                
             </div>
         </div>
 
@@ -93,10 +129,66 @@
         <script src="http://d3js.org/topojson.v1.min.js"></script>
         <script src="./lib/crossfilter/crossfilter.js"></script>
  
+        <!---script to move titles-->
+
+        <script type="text/javascript">
+
+        var windw = this;
+
+            $.fn.followTo = function ( pos ) {
+                var $this = this,
+                    $window = $(windw);
+                
+                $window.scroll(function(e){
+                    if ($window.scrollTop() > pos) {
+                        $this.css({
+                            position: 'absolute',
+                            top: pos+100
+                        });
+                    } else {
+                        $this.css({
+                            position: 'fixed',
+                            top: 150
+                        });
+                    }
+                });
+            };
+
+            $('#f').followTo(520);
+
+            $.fn.followTo2 = function ( pos ) {
+                var $this = this,
+                    $window = $(windw);
+                
+                $window.scroll(function(e){
+                    if ($window.scrollTop() > pos) {
+                        $this.css({
+                            position: 'absolute',
+                            top: pos+38
+                        });
+                    } else {
+                        $this.css({
+                            position: 'fixed',
+                            top: 88
+                        });
+                    }
+                });
+            };
+
+            $('#ff').followTo2(620);
+
+            
+
+        </script>
 
         <!-- Scripts -->
-        <!--<script src="./scripts/map.js"></script>-->
+        
+        <script src="./scripts/map.js"></script>
 		<script src="./scripts/chart.js"></script>
+
+        <!--Scrollbar Disappear-->
+    
+        
 
     </body>
 </html>

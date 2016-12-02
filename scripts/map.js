@@ -22,8 +22,10 @@
 	//SVG FOR MAP
 	var svg = d3.select( ".plot" )
 	    .append( "svg" )
-	    .attr( "width", width )
-	    .attr( "height", height );
+	    .attr( "width", w )
+	    .attr( "height", h );
+
+	    console.log(w+", "+width);
 
 	svg.append("rect")
 	    .attr("class", "background")
@@ -37,7 +39,7 @@
 
 	//PROJECTION
 	var albersProjection = d3.geoAlbers()
-	    .scale( 240000 )
+	    .scale( 190000 )
 	    .rotate( [71.087,0] )
 	    .center( [0, 42.313] )
 	    .translate( [width/2,height/2] );
@@ -47,7 +49,6 @@
 	    .projection( albersProjection );
 
 
-	    //console.log("DOES THIS EVEN WORK?")
 
 
 //
@@ -230,16 +231,6 @@
 	    g.selectAll(".neighborhoods")
 	        .classed("active", centered && function(d) { return d === centered; });
 
-	    // g.selectAll('.station_dot')
-	    //     .transition()
-	    //     .duration(550)
-	    //     .attr('r', function() {
-	    //         if(k == 1) {return rad}
-	    //         else { return rad*k/2 } })
-	    //     .attr('stroke-width', function(){
-	    //         if(k == 1) {return rad/2}
-	    //         else { return rad*k/2 } });
-
 
 	    g.transition()
 	        .duration(750)
@@ -259,6 +250,7 @@ function dataLoaded(err, rows, bos, sch, gj0, gj1, gj2, gj3, gj4, gj5, gj6, gj7,
 	//ROWS is stop and frisk data
 	//console.log(rows); // 152230 rows
 	
+
 	//SCH, SCH2 is boston school locations
 	var sch2 = conjoin_repeats(sch); 
 	//console.log(sch2);
@@ -285,7 +277,8 @@ function dataLoaded(err, rows, bos, sch, gj0, gj1, gj2, gj3, gj4, gj5, gj6, gj7,
 			{ geos.splice(i, 1); } 
 		}) //from ~152,230 to 131,676; loss of 20,554 entries (~13.5% loss)
 
-	console.log(geos);
+	var geos2 = geos.slice(0,8001);
+
 
 
 	//Patrick: cross filter example for later
@@ -351,6 +344,7 @@ function dataLoaded(err, rows, bos, sch, gj0, gj1, gj2, gj3, gj4, gj5, gj6, gj7,
         .append('path')
         .attr('class', 'boston neighborhoods')
         .attr( 'd', geoPath )
+        .attr('transform', 'translate(-30,0)')
         //.style('fill', '#888') //boston
         .on("click", clicked);
     //END OF NEIGHBORHOODS ON MAP
@@ -358,7 +352,7 @@ function dataLoaded(err, rows, bos, sch, gj0, gj1, gj2, gj3, gj4, gj5, gj6, gj7,
     //APPEND STOP AND FRISKS ON MAP
 	 var radi = 1;
 	 g.selectAll('.stop_n_frisks')
-	 	.data( geos )
+	 	.data( geos2 )
 	 	.enter()
 	 	.append('circle')
 	 	.attr('class', 'stop_n_frisks')
@@ -374,6 +368,7 @@ function dataLoaded(err, rows, bos, sch, gj0, gj1, gj2, gj3, gj4, gj5, gj6, gj7,
 	        .style('fill', 'rgb(0,0,255)')
 	        .style('stroke-width', 0)
 	        .style('opacity', .1)
+	        .attr('transform', 'translate(-30,0)')
 	        .on("click", clicked);
 	 //END STOP AND FRISKS ON MAP
 
@@ -398,14 +393,80 @@ function dataLoaded(err, rows, bos, sch, gj0, gj1, gj2, gj3, gj4, gj5, gj6, gj7,
         //.transition(750)
         .attr('width', square)
         .attr('height', square)
+        .attr('transform', 'translate(-30,0)')
 	        .style('fill', 'rgb(255,0,0)')
 	        .style('stroke-width', 0)
 	        .on("click", clicked);
 	//END SCHOOLS ON MAP
 
+	d3.select('#fff')
+		.append('svg')
+			.attr('id', 'svg_clear')
+			.attr('width', 25)
+			.attr('height', 545)
+			// .style('outline', 'dashed 1px #aaa')
+			// .style('outline-offset', '-10px')
+			
+	
+		$(window).scroll(function(){
+		  //more then or equals to
+		  if($(window).scrollTop() >= 150 && $(window).scrollTop() < 300  ){
+				$(".dd").fadeOut(3000);
+		  //less then 100px from top
+		  } else if ($(window).scrollTop() >= 300 ){
+		    	$("#fff").fadeIn(3000);
+				$(".dd").fadeOut();
 
-	 
+		  } else {
+		     	$("#fff").fadeOut(1000);
+		     	$(".dd").fadeIn(1600);
+		  }
+		});
 
+//
+//
+// Brush 
+//
+//
+	
+	// var x0 = [w/2, h/2],
+ //    y0 = [-4.5 * k, 4.5 * k],
+	// xx = d3.scaleLinear().domain(x0).range([0, width]),
+ //    yy = d3.scaleLinear().domain(y0).range([height, 0]);
+
+	// var brush = d3.brush().on("end", brushended),
+	// idleTimeout,
+ //    idleDelay = 350;
+
+	// svg.append("g")
+	//     .attr("class", "brush")
+	//     .call(brush);
+
+	// function brushended() {
+	//   var s = d3.event.selection;
+	  
+	//   if (!s) {
+	//     if (!idleTimeout) return idleTimeout = setTimeout(idled, idleDelay);
+	//     console.log("zoom out?")
+	//     // xx.domain(x0);
+	//     // yy.domain(y0);
+	//   } else {
+	//     xx.domain([s[0][0], s[1][0]].map(x.invert, x));
+	//     yy.domain([s[1][1], s[0][1]].map(y.invert, y));
+	//     svg.select(".brush").call(brush.move, null);
+	//   }
+	//   zoom();
+	// }
+
+	// function idled() {
+	// 	idleTimeout = null;
+	// }
+
+	// function zoom() {
+	//   console.log('do this to stacked bar');
+	// }
+    
+    
 
 } //end of dataLoaded
 
