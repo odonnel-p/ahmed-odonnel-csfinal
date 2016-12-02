@@ -363,15 +363,7 @@ h1, h2, p {
     position:fixed; top:88px; left:1050px;
 }
 
-#fff {
-    display: none;
-    position: absolute;
-    top: 662px;
-    left: 1050px;
-    width: 50px;
-    height: 565px;
-    
-}
+
     #svg_clear {
         z-index: 1;
         /*display: none;*/
