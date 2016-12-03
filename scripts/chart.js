@@ -16,6 +16,8 @@ var z = d3.scaleOrdinal()
 
 var stack = d3.stack()
     .offset(d3.stackOffsetExpand);
+	
+var lastHovered;
 
 d3.csv("data/chart1data.csv", type, function(error, data) {
   if (error) throw error;
@@ -49,25 +51,29 @@ d3.csv("data/chart1data.csv", type, function(error, data) {
       .attr("y", function(d) { return y(d[1]); })
       .attr("height", function(d) { return y(d[0]) - y(d[1]); })
       .attr("width", x.bandwidth())
-	  .on("mouseover", function() { 
-          console.log("Mouseover");
+	  .on("mouseover", function(d) { 
       		tooltip.style("display", null);
       		d3.select(this)
       			.attr("stroke","red")
-      			.attr("stroke-width", 2);
+      			.attr("stroke-width", 2)
+			var e = document.querySelectorAll(':hover');
+			var ind = e[6].__data__.index;
+			lastHovered = ind;
+ 			d3.select(serie._groups[0][ind].children[5])
+				.style("stroke","red")
+				.style("stroke-width", 2); 
             })
-	  .on("mouseout", function() { 
-          console.log("mouseout");
+	  .on("mouseout", function(d) { 
       		tooltip.style("display", "none");
       		d3.select(this)
       			.attr("stroke","none");
-            })
+			d3.select(serie._groups[0][lastHovered].children[5])
+				.style("stroke","none");
+			})
 	  .on("mousemove", function(d) {
-          console.log("mousemove");
       		var xPosition = d3.mouse(this)[0] - 10;
       		var yPosition = d3.mouse(this)[1] + 16;
       		var elements = document.querySelectorAll(':hover');
-          console.log(elements);
       		var race = elements[6].__data__.key;
       		tooltip.attr("transform", "translate(" + xPosition + "," + yPosition + ")");
       		tooltip.select("text").text(race + ": "  + roundToOneDecimal(100*(d[1]-d[0])) + '%');
