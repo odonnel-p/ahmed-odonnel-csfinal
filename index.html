@@ -123,6 +123,8 @@
             
         </div>
 
+        <div id="footer" style="display:none; position:fixed; bottom:0px; left:0px; width:100%; background-color: white;">Insert Footer Text!</div>
+
         <!-- Libraries -->
         <script src="https://d3js.org/d3.v4.min.js"></script>
         <script src="https://d3js.org/d3-queue.v3.min.js"></script>
@@ -176,6 +178,12 @@
             };
 
             $('#ff').followTo2(650);
+
+            $(function(){
+                $(window).scroll(function() {              
+                  $('#footer').toggle($(document).scrollTop() > 750);
+                });
+            })
 
             
 

@@ -343,6 +343,7 @@ function dataLoaded(err, rows, bos, sch, gj0, gj1){
 	 	.enter()
 	 	.append('circle')
 	 	.attr('class', 'stop_n_frisks')
+	 	.attr('id', function(d,i) { return ("sf"+i); })
 	 	.attr('occurence', function(d,i) { return 'oc'+i })
 		.attr('cx', function(f) {
             var xy = albersProjection(f.geometry.coordinates);
@@ -427,19 +428,23 @@ function dataLoaded(err, rows, bos, sch, gj0, gj1){
 
 		console.log(geos);
 
-		// var centers = mapJson.features.map(function (d) {
+		var centers = geos.map(function (d) {
 
-		// 	var centroid = path.centroid(d); //provides two numbers [x,y] indicating the screen coordinates of the state
-		// 	//Puerto Rico returns NaN, sends error to the console. Also, something wrong with UT data - no fill color assigned.
+			//console.log(d);
+			var centroid = geoPath.centroid(d); //provides two numbers [x,y] indicating the screen coordinates of the state
+			//Puerto Rico returns NaN, sends error to the console. Also, something wrong with UT data - no fill color assigned.
 
-		// 	return {
-		// 		id: d.id,
-		// 		x0: centroid[0],
-		// 		y0: centroid[1],
-		// 		x: centroid[0],
-		// 		y: centroid[1]
-		// 	}
-		// });
+			return {
+				id: d.properties.id,
+				description: d.properties.description,
+				x0: centroid[0],
+				y0: centroid[1],
+				x: centroid[0],
+				y: centroid[1]
+			}
+		});
+
+		var selected_GEOs = [];
 
 		function brushed() {
 
@@ -454,8 +459,8 @@ function dataLoaded(err, rows, bos, sch, gj0, gj1){
 
 			function clickedRect(){
 				svg.selectAll('.clickRect').remove();
-				svg.selectAll('.country').style('fill','none');
-				selectedCountries = [];
+				svg.selectAll('.stop_n_frisks').style('fill','black');
+				selected_GEOs = [];
 				selectedString = '';
 			}
 
@@ -469,41 +474,50 @@ function dataLoaded(err, rows, bos, sch, gj0, gj1){
 						bdy = by1 - by0,
 						max = 0;
 
-					var selectedCountryArray = [];
+					var selected_GEOArray = [];
 
 					centers.forEach(function(d){
 						if (  ((bx0 < d.x0 && d.x0 < bx1) && (by0 < d.y0 && d.y0 < by1)) || ((bx0 > d.x0 && d.x0 > bx1) && (by0 > d.y0 && d.y0 > by1)) ){
-							//console.log(d.id);
-							selectedCountries.push(d);
-							selectedCountryArray.push(d.id);
+							//console.log(d);
+							selected_GEOs.push(d);
+							selected_GEOArray.push(d.description);
 						}
 					});
 
-					svg.selectAll('.country').style('fill','lightgray');
+					// console.log(selected_GEOs);
+					// console.log(selected_GEOArray);
+
+					//svg.selectAll('.stop_n_frisks').style('fill','orange');
 
 					var selectedString = "";
 
-					selectedCountries.forEach(function(d,i){
-						if (i < selectedCountries.length - 1){
-							selectedString = selectedString + "." + d.id + ","
+					selected_GEOs.forEach(function(d,i){
+						if (i < selected_GEOs.length - 1){
+							selectedString = selectedString + "#sf" + d.id + ","
 						}
 						else {
-							selectedString = selectedString + "." + d.id
+							selectedString = selectedString + "#sf" + d.id
 						}
 					});
 
+					console.log(selectedString);
+					//see if 510 works
 					svg.selectAll(selectedString).style('fill','#80b78d');
 
-					countryList(forests,selectedCountryArray);
+					draw_chart_addendum(geos,selected_GEOArray);
 
-					var invert1 = projection.invert(s[0]);
-					var invert2 = projection.invert(s[1]);
+					var invert1 = albersProjection.invert(s[0]);
+					var invert2 = albersProjection.invert(s[1]);
 
 				}
 
 		}
 		
-				
+	
+	function draw_chart_addendum ( _geos, _array) {
+
+		console.log(_array);
+	}		
 
 
 //
