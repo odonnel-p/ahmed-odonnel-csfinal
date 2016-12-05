@@ -60,7 +60,8 @@
 
 	d3.queue()
     .defer(d3.csv,'data/Boston_Police_Department_FIO_CLEANED.csv', parse) //rows
-    .defer(d3.json, 'data/neighborhoods.json') //bos
+    //.defer(d3.json, 'data/neighborhoods.json') //bos
+	.defer(d3.json,'data/CENSUS2010TRACTS_WGS84_geo.json')
     .defer(d3.csv, 'data/Boston_Public_Schools_2012-2013.csv', parseSchool) //sch
     .defer(d3.json, 'data/geocodes/locations_0.geojson')
     .defer(d3.json, 'data/geocodes/locations_1.geojson')
@@ -344,6 +345,8 @@ function dataLoaded(err, rows, bos, sch, gj0, gj1, gj2, gj3, gj4, gj5, gj6, gj7,
         .append('path')
         .attr('class', 'boston neighborhoods')
         .attr( 'd', geoPath )
+		.style("stroke","black")
+		.style("stroke-width",1)
         .attr('transform', 'translate(-30,0)')
         //.style('fill', '#888') //boston
         .on("click", clicked);
