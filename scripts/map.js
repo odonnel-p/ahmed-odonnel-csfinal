@@ -337,7 +337,7 @@ function dataLoaded(err, rows, bos, sch, gj0, gj1){
     //END OF NEIGHBORHOODS ON MAP
 
     //APPEND STOP AND FRISKS ON MAP
-	 var radi = 1;
+	 var radi = 1.1;
 	 g.selectAll('.stop_n_frisks')
 	 	.data( geos )
 	 	.enter()
@@ -352,16 +352,16 @@ function dataLoaded(err, rows, bos, sch, gj0, gj1){
             return xy[1]; })
         //.transition(750)
         .attr('r', radi)
-	        .style('fill', 'rgb(0,0,255)')
+	        .style('fill', 'rgb(255,0,0)')
 	        .style('stroke-width', 0)
-	        .style('opacity', .1)
+	        .style('opacity', .12)
 	        .attr('transform', 'translate(-30,0)')
 	        // .on("click", clicked);
 	 //END STOP AND FRISKS ON MAP
 
 
     //APPEND SCHOOLS ON MAP
-    var square = 5;
+    var square = 4;
     //Plot schools as squares
     g.selectAll('.square_school')
         .data( sch2 )
@@ -381,7 +381,7 @@ function dataLoaded(err, rows, bos, sch, gj0, gj1){
         .attr('width', square)
         .attr('height', square)
         .attr('transform', 'translate(-30,0)')
-	        .style('fill', 'rgb(255,0,0)')
+	        .style('fill', '#171717')
 	        .style('stroke-width', 0)
 	        //.on("click", clicked);
 	//END SCHOOLS ON MAP

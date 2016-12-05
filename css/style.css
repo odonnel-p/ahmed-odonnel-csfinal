@@ -261,21 +261,20 @@ h1, h2, p {
     line-height: 18px;
     width: 150px;
     text-align: right;
-
     }
 
-        .tiny2 {
-            position: relative;
-            float:left;
-            font-weight: 200;
-            font-size: 10px;
-            line-height: 18px;
-            width: 190px;
-            margin-left: 50px;
-            text-align: center;
-            border-top: solid #aaa 1px;
-            padding-top: 4px;
-        }
+	.tiny2 {
+		position: relative;
+		float:left;
+		font-weight: 200;
+		font-size: 10px;
+		line-height: 18px;
+		width: 190px;
+		margin-left: 50px;
+		text-align: center;
+		border-top: solid #aaa 1px;
+		padding-top: 4px;
+	}
 
     .icons {
         margin-left: 6px;
@@ -283,9 +282,16 @@ h1, h2, p {
         float:right;
         width:16px;
         height:16px;
-        background: green;
     }
 
+	.school_icon {
+		background-color:#171717;
+	}
+	
+	.snf_icon {
+		background-color:#ff0000;
+	}
+	
 /*----------- Chart -----------*/
 
 .chart {
@@ -328,7 +334,7 @@ h1, h2, p {
 .square_school {
     background-color: blue;
     stroke: darkblue;
-    stroke-width: .7;
+    stroke-width: .5;
 }
 
 
