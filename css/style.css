@@ -99,9 +99,22 @@ body {
         overflow: hidden;
         float:left;
         width: 70%;
-        height: 80%;
+        height: 700px;
         /*background-color: #eee;*/
         /*margin-left: -40px;*/
+    }
+
+    /*.extent {
+      stroke: solid 6px black;
+      fill-opacity: 0;
+      shape-rendering: crispEdges;
+    }*/
+
+    .brush .selection {
+      stroke-width: 2px;
+      stroke: green;
+      fill-opacity: 0;
+      shape-rendering: crispEdges;
     }
 
 #containeroutro {

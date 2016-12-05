@@ -3,6 +3,7 @@
 //  Plotting the map
 //	odonnel.p 
 //	CS 7280, AU 2016
+//  zoom functionality based off: https://bl.ocks.org/mbostock/2206590
 //
 //
 
@@ -32,17 +33,27 @@
 	    .attr( "width", w )
 	    .attr( "height", h );
 
-	    console.log(w+", "+width);
+	    //console.log(w+", "+width);
+
+	    		
 
 	svg.append("rect")
 	    .attr("class", "background")
 	    .attr("width", width)
 	    .attr("height", height)
-	    .style('fill', 'none')
+	    .style('fill', '#eee')
 	    .on("click", clicked);
 
+	    //SVG for stacked bar addendum
+	    		var svg_add = svg.append("rect")
+	    			.attr("width", 25)
+	    			.attr("height", 546)
+	    			.attr("transform", "translate("+(w-55)+",4)")
+	    			.style("fill", "#ddd");
+	    			//.style("stroke", "orange");
+
 	var g = svg.append( "g" );
-	var g2 = svg.append( "g" );
+	//var g2 = svg.append( "g" );
 
 	//PROJECTION
 	var albersProjection = d3.geoAlbers()
@@ -56,7 +67,59 @@
 	    .projection( albersProjection );
 
 
+//
+//
+// adding the brush
+// from: http://bl.ocks.org/mbostock/f48fcdb929a620ed97877e4678ab15e6
+//
+//
 
+
+			// var brush = d3.brush().on("end", brushended),
+			//     idleTimeout,
+			//     idleDelay = 350;
+
+			// var k = height / width,
+			//     x0 = albersProjection([-70.922, -71.195]),
+			//     y0 = albersProjection([42.404, -42.23]),
+			//     x = d3.scaleLinear().domain(x0).range([0, w]),
+			//     y = d3.scaleLinear().domain(y0).range([h, 0]);
+			//     //z = d3.scaleOrdinal(d3.schemeCategory10);
+
+
+
+
+			//push up to brushended()
+			// 		  var s = d3.event.selection;
+			// 		  if (!s) {
+			// 		    if (!idleTimeout) return idleTimeout = setTimeout(idled, idleDelay);
+			// 		    x.domain(x0);
+			// 		    y.domain(y0);
+			// 		    //undraw_chart_addendum();
+			// 		  } else {
+			// 		    x.domain([s[0][0], s[1][0]].map(x.invert, x));
+			// 		    y.domain([s[1][1], s[0][1]].map(y.invert, y));
+			// 		    svg.select(".brush").call(brush.move, null);
+			// 		    draw_chart_addendum();
+			// 		  }
+			// 		  console.log("brushended, ended.");
+			// 		}
+
+			// function idled() {
+			// 		  idleTimeout = null;
+			// 		}
+
+			// function draw_chart_addendum() {
+			// 		  // var t = svg.transition().duration(750);
+			// 		  // svg.select(".axis--x").transition(t).call(xAxis);
+			// 		  // svg.select(".axis--y").transition(t).call(yAxis);
+			// 		  // svg.selectAll("circle").transition(t)
+			// 		  //     .attr("cx", function(d) { return x(d[0]); })
+			// 		  //     .attr("cy", function(d) { return y(d[1]); });
+			// 		  console.log("chart_addendum drawn");
+			// 		}
+
+ 
 
 //
 //
@@ -259,72 +322,9 @@ function dataLoaded(err, rows, bos, sch, gj0, gj1){
 
 	geos.sort(function(a, b) { return a.properties.id - b.properties.id; });
 		
-/* 		geos.forEach( function(_g,i) {
-			if ( _g.geometry != null ) {
-				
-				if (_g.geometry.coordinates[0] > -70.922 || _g.geometry.coordinates[0] < -71.195 ||
-					_g.geometry.coordinates[1] > 42.404  || _g.geometry.coordinates[1] < -42.23) {
-						
-					geos.splice(i, 1);
-						
-				} 
-			}
-		}) //from ~152,230 to 131,676; loss of 20,554 entries (~13.5% loss) */
-
-	//Patrick: cross filter example for later
-    //crossfilter and dimensions
-    // var cfStart = crossfilter(rows);
-    // var tripsByStart1 = cfStart.dimension(function(d){return d.startStation;}),
-    //     tripsByTimeStart = cfStart.dimension(function(d){return d.startTimeT;});
-
-    // var cfEnd = crossfilter(rows);
-    // var tripsByEnd1 = cfEnd.dimension(function(d){return d.endStation;}),
-    //     tripsByTimeEnd = cfEnd.dimension(function(d){return d.startTimeT;});
-
-    //nest and crossfilter data when a station is selected as start
-    // function selectStation(id){
-    //     tripsByStart1.filterAll();
-    //     tripsByTimeStart.filterAll();
-
-    //     //choose the station as start station
-    //     var nestStart = d3.nest()
-    //         .key(function(d){return d.endStation})
-    //         .rollup(function(d){return d.length})  //rollup!!
-    //         .entries(tripsByStart1.filter(id).top(Infinity));
-
-    //     var cf2Start = crossfilter(nestStart);
-    //     var topTripsStart = cf2Start.dimension(function(d){return d.values;}).top(10);
-    //     console.log(topTripsStart);
-
-    //     var longlat = stationNameID.get(id).lngLat;
-    //     var start = true;
-
-    //     //pass on the array of trips to dispatcher
-    //     dispatcherStation.getarray(topTripsStart, stations, longlat, start);
-    // }
 
 
-    //nest and crossfilter data when a station is selected as start
-    // function selectStationEnd(id){
-    //     tripsByEnd1.filterAll();
-    //     tripsByTimeEnd.filterAll();
 
-    //     //choose the station as end station
-    //     var nestEnd = d3.nest()
-    //         .key(function(d){return d.startStation})
-    //         .rollup(function(d){return d.length})  //rollup!!
-    //         .entries(tripsByEnd1.filter(id).top(Infinity));
-
-    //     var cf2End = crossfilter(nestEnd);
-    //     var topTripsEnd = cf2End.dimension(function(d){return d.values;}).top(10);
-    //     console.log(topTripsEnd);
-
-    //     var longlat = stationNameID.get(id).lngLat;
-    //     var start = false;
-
-    //     //pass on the array of trips to dispatcher
-    //     dispatcherStation.getarray(topTripsEnd, stations, longlat, start);
-    // }
 
     
     //APPEND NEIGHBORHOODS ON MAP
@@ -361,7 +361,7 @@ function dataLoaded(err, rows, bos, sch, gj0, gj1){
 	        .style('stroke-width', 0)
 	        .style('opacity', .1)
 	        .attr('transform', 'translate(-30,0)')
-	        .on("click", clicked);
+	        // .on("click", clicked);
 	 //END STOP AND FRISKS ON MAP
 
 
@@ -388,7 +388,7 @@ function dataLoaded(err, rows, bos, sch, gj0, gj1){
         .attr('transform', 'translate(-30,0)')
 	        .style('fill', 'rgb(255,0,0)')
 	        .style('stroke-width', 0)
-	        .on("click", clicked);
+	        //.on("click", clicked);
 	//END SCHOOLS ON MAP
 
 	d3.select('#fff')
@@ -414,6 +414,102 @@ function dataLoaded(err, rows, bos, sch, gj0, gj1){
 		     	$(".dd").fadeIn(1600);
 		  }
 		});
+
+//
+//
+// BRUSH
+//
+//		
+		var brush = d3.brush()
+		//.on("start brush", brushed)
+		.on("end", brushed);
+
+		var gBrush = svg.append("g")
+			.attr("class", "brush")
+			.call(brush);
+
+		
+
+		console.log(geos);
+
+		// var centers = mapJson.features.map(function (d) {
+
+		// 	var centroid = path.centroid(d); //provides two numbers [x,y] indicating the screen coordinates of the state
+		// 	//Puerto Rico returns NaN, sends error to the console. Also, something wrong with UT data - no fill color assigned.
+
+		// 	return {
+		// 		id: d.id,
+		// 		x0: centroid[0],
+		// 		y0: centroid[1],
+		// 		x: centroid[0],
+		// 		y: centroid[1]
+		// 	}
+		// });
+
+		function brushed() {
+
+			clickRect = svg.append('rect')
+				.attr('width',600)
+				.attr('height',400)
+				.attr('class', 'clickRect')
+				.style('fill','none')
+				.attr('pointer-events', 'all')
+				.on('click',clickedRect);
+
+
+			function clickedRect(){
+				svg.selectAll('.clickRect').remove();
+				svg.selectAll('.country').style('fill','none');
+				selectedCountries = [];
+				selectedString = '';
+			}
+
+			var s = d3.event.selection; //returns the brush selection region
+				if (s != null){
+					var bx0 = s[0][0], //get the x0 position from the brush selection
+						by0 = s[0][1],
+						bx1 = s[1][0],
+						by1 = s[1][1],
+						bdx = bx1 - bx0,
+						bdy = by1 - by0,
+						max = 0;
+
+					var selectedCountryArray = [];
+
+					centers.forEach(function(d){
+						if (  ((bx0 < d.x0 && d.x0 < bx1) && (by0 < d.y0 && d.y0 < by1)) || ((bx0 > d.x0 && d.x0 > bx1) && (by0 > d.y0 && d.y0 > by1)) ){
+							//console.log(d.id);
+							selectedCountries.push(d);
+							selectedCountryArray.push(d.id);
+						}
+					});
+
+					svg.selectAll('.country').style('fill','lightgray');
+
+					var selectedString = "";
+
+					selectedCountries.forEach(function(d,i){
+						if (i < selectedCountries.length - 1){
+							selectedString = selectedString + "." + d.id + ","
+						}
+						else {
+							selectedString = selectedString + "." + d.id
+						}
+					});
+
+					svg.selectAll(selectedString).style('fill','#80b78d');
+
+					countryList(forests,selectedCountryArray);
+
+					var invert1 = projection.invert(s[0]);
+					var invert2 = projection.invert(s[1]);
+
+				}
+
+		}
+		
+				
+
 
 //
 //
