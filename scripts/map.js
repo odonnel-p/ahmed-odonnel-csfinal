@@ -25,7 +25,7 @@
 	
 	var raceColors = d3.scaleThreshold()
 		.domain([0,20,40,60,80,100])
-		.range(["#f2f0f7", "#dadaeb", "#bcbddc", "#9e9ac8", "#756bb1", "#54278f"]);
+		.range(["#eeeeee", "#d4e5e8", "#bbdde2", "#A2D4DD", "#89CCD7", "#70C4D2"]);
 		
 	//SVG FOR MAP
 	var svg = d3.select( ".plot" )
@@ -41,7 +41,7 @@
 	    .attr("class", "background")
 	    .attr("width", width)
 	    .attr("height", height)
-	    .style('fill', '#eee')
+	    .style('fill', '#fffff9')
 	    .on("click", clicked);
 
 	    //SVG for stacked bar addendum
@@ -321,21 +321,16 @@ function dataLoaded(err, rows, bos, sch, gj0, gj1){
 				.concat(gj1.features);
 
 	geos.sort(function(a, b) { return a.properties.id - b.properties.id; });
-		
 
-
-
-
-    
     //APPEND NEIGHBORHOODS ON MAP
     g.selectAll( ".boston" )
         .data( bos.features )
         .enter()
         .append('path')
         .attr('class', 'boston neighborhoods')
-	    .attr('fill', function(d,i) {return raceColors(raceByTract.get(bos.features[i].id)); })
+	    .style('fill', function(d,i) {return raceColors(raceByTract.get(d.id)); })
         .attr( 'd', geoPath )
-		.style("stroke","#eee")
+		.style("stroke","#fffff9")
 		.style("stroke-width",1)
         .attr('transform', 'translate(-30,0)')
         .on("click", clicked);
