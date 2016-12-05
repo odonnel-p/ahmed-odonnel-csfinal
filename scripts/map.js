@@ -18,7 +18,14 @@
 	    zoomed = false,
 	    switch_a = false,
 	    rad =2;
-
+		
+	//RACE COLOR MAPPING
+	var raceByTract = d3.map();
+	
+	var raceColors = d3.scaleThreshold()
+		.domain([0,20,40,60,80,100])
+		.range(["#f2f0f7", "#dadaeb", "#bcbddc", "#9e9ac8", "#756bb1", "#54278f"]);
+		
 	//SVG FOR MAP
 	var svg = d3.select( ".plot" )
 	    .append( "svg" )
@@ -60,21 +67,11 @@
 
 	d3.queue()
     .defer(d3.csv,'data/Boston_Police_Department_FIO_CLEANED.csv', parse) //rows
-    //.defer(d3.json, 'data/neighborhoods.json') //bos
-	.defer(d3.json,'data/CENSUS2010TRACTS_WGS84_geo.json')
+	.defer(d3.json,'data/CENSUS2010TRACTS_WGS84_geo.json') //bos
     .defer(d3.csv, 'data/Boston_Public_Schools_2012-2013.csv', parseSchool) //sch
-    .defer(d3.json, 'data/geocodes/locations_0.geojson')
-    .defer(d3.json, 'data/geocodes/locations_1.geojson')
-    .defer(d3.json, 'data/geocodes/locations_2.geojson')
-    .defer(d3.json, 'data/geocodes/locations_3.geojson')
-    .defer(d3.json, 'data/geocodes/locations_4.geojson')
-    .defer(d3.json, 'data/geocodes/locations_5a.geojson')
-    .defer(d3.json, 'data/geocodes/locations_5b.geojson')
-    .defer(d3.json, 'data/geocodes/locations_6.geojson')
-    .defer(d3.json, 'data/geocodes/locations_7.geojson')
-    .defer(d3.json, 'data/geocodes/locations_8.geojson')
-    .defer(d3.json, 'data/geocodes/locations_9a.geojson')
-    .defer(d3.json, 'data/geocodes/locations_9b.geojson')
+    .defer(d3.json, 'data/geocodes/boston_police_department_fio_cleaned_2015a.json') //gj0
+	.defer(d3.json, 'data/geocodes/boston_police_department_fio_cleaned_2015b.json') //gj1
+	.defer(d3.csv, 'data/percent_white_by_census_tract.csv', function(d) { raceByTract.set(d.id, +d.pc_white); })
     .await(dataLoaded);
 
 
@@ -246,7 +243,7 @@
 //
 //
 
-function dataLoaded(err, rows, bos, sch, gj0, gj1, gj2, gj3, gj4, gj5, gj6, gj7, gj8, gj9, gj10, gj11){
+function dataLoaded(err, rows, bos, sch, gj0, gj1){
         
 	//ROWS is stop and frisk data
 	//console.log(rows); // 152230 rows
@@ -258,29 +255,21 @@ function dataLoaded(err, rows, bos, sch, gj0, gj1, gj2, gj3, gj4, gj5, gj6, gj7,
 
 	//GEOS is geojsons with locations for stop and frisks, 
 	var geos = gj0.features
-				.concat(gj1.features)
-				.concat(gj2.features)
-				.concat(gj3.features)
-				.concat(gj4.features)
-				.concat(gj5.features)
-				.concat(gj6.features)
-				.concat(gj7.features)
-				.concat(gj8.features)
-				.concat(gj9.features)
-				.concat(gj10.features)
-				.concat(gj11.features);
+				.concat(gj1.features);
 
 	geos.sort(function(a, b) { return a.properties.id - b.properties.id; });
 		
-		geos.forEach( function(_g,i) { 
-			if (_g.geometry.coordinates[0] > -70.922 || _g.geometry.coordinates[0] < -71.195 ||
-				_g.geometry.coordinates[1] > 42.404  || _g.geometry.coordinates[1] < -42.23) 
-			{ geos.splice(i, 1); } 
-		}) //from ~152,230 to 131,676; loss of 20,554 entries (~13.5% loss)
-
-	var geos2 = geos.slice(0,8001);
-
-
+/* 		geos.forEach( function(_g,i) {
+			if ( _g.geometry != null ) {
+				
+				if (_g.geometry.coordinates[0] > -70.922 || _g.geometry.coordinates[0] < -71.195 ||
+					_g.geometry.coordinates[1] > 42.404  || _g.geometry.coordinates[1] < -42.23) {
+						
+					geos.splice(i, 1);
+						
+				} 
+			}
+		}) //from ~152,230 to 131,676; loss of 20,554 entries (~13.5% loss) */
 
 	//Patrick: cross filter example for later
     //crossfilter and dimensions
@@ -344,18 +333,18 @@ function dataLoaded(err, rows, bos, sch, gj0, gj1, gj2, gj3, gj4, gj5, gj6, gj7,
         .enter()
         .append('path')
         .attr('class', 'boston neighborhoods')
+	    .attr('fill', function(d,i) {return raceColors(raceByTract.get(bos.features[i].id)); })
         .attr( 'd', geoPath )
-		.style("stroke","black")
+		.style("stroke","#eee")
 		.style("stroke-width",1)
         .attr('transform', 'translate(-30,0)')
-        //.style('fill', '#888') //boston
         .on("click", clicked);
     //END OF NEIGHBORHOODS ON MAP
 
     //APPEND STOP AND FRISKS ON MAP
 	 var radi = 1;
 	 g.selectAll('.stop_n_frisks')
-	 	.data( geos2 )
+	 	.data( geos )
 	 	.enter()
 	 	.append('circle')
 	 	.attr('class', 'stop_n_frisks')
