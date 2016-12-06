@@ -546,13 +546,11 @@ function dataLoaded(err, bos, sch, gj0, gj1){
 		    return parseFloat(a.percentage) - parseFloat(b.percentage);
 		});
 
-
-
-		var addend_h = d3.select('.rect2').node().clientHeight;
+		var addend_h = d3.select('.rect2').node().height.baseVal.value;
 		
 		var y = d3.scaleLinear()
-		    			.range([addend_h, 0])
-		    			.domain([0, 100]);
+		    			.domain([0, 100])
+		    			.range([0, addend_h]);
 
 		var z = d3.scaleOrdinal()
 		   				 .range(["#7fc97f", "#beaed4", "#fdc086", "#ffff99", "#386cb0", "#f0027f", "#bf5b17"])
@@ -561,7 +559,6 @@ function dataLoaded(err, bos, sch, gj0, gj1){
 		var stack = d3.stack()
 		    .offset(d3.stackOffsetExpand);
 
-		var lastHovered;
 		var prev=0;
 
 		//x.domain(data.map(function(d) { return d.Year; }));
@@ -572,21 +569,18 @@ function dataLoaded(err, bos, sch, gj0, gj1){
 		    .enter()
 		      .append("rect")
 		      .attr("class", "rects")
-		      .attr("id", function(d) { return d.race+"add" })
+		      .attr("id", function(d) { return d.race+"_add" })
 		      .attr("fill", function(d) { return z(d.race); })
-
 				.attr("x", 0)
-				.attr("y", function(d,i) { 	
-					if (i == 0) {
-						prev = 0;
-					} else {			
-						prev = prev + occur2[i].percentage;					
-					} return prev;
+				.attr("y", function(d,i) {
+					var y_current = prev;
+					prev = prev + occur2[i].percentage;					
+					return y(y_current);
 				})
 				.attr("width", 25)
 				.attr("transform", "translate("+22+","+33+")")
 				//.style("fill", "#ddd");
-		      	.attr("height", function(d) { return d.percentage/100*546; }) //y(d.percentage);
+		      	.attr("height", function(d) { return y(d.percentage); }) //y(d.percentage);
 		   
 			  // .on("mouseover", function(d) { 
 		   //    		tooltip.style("display", null);
