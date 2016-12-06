@@ -265,16 +265,23 @@ h1, h2, p {
         margin-left: 6px;
         position: relative;
         float:right;
-        width:16px;
-        height:16px;
     }
 
 	.school_icon {
 		background-color:#171717;
+		width:8px;
+        height:8px;
+		margin-top:5px;
 	}
 	
 	.snf_icon {
-		background-color:#ff0000;
+		margin-top:6px;
+		width:4px;
+		height:4px;
+		background:rgb(255,0,0);
+		-moz-border-radius: 2px;
+		-webkit-border-radius: 2px;
+		border-radius: 2px;
 	}
 	
 /*----------- Chart -----------*/
@@ -383,7 +390,7 @@ h1, h2, p {
    height:150px;
    width:100%;
    -webkit-transition: height 2s;
-   background:#999;
+   background:#fffff9;
    transition: height 2s;
 }
 
