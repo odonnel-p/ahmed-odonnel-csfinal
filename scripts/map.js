@@ -45,8 +45,10 @@
 	var svg_add = d3.select( ".plot" )
 		.append("svg")
 			.attr("class", "addendum")
+			.attr("id", "fff")
 			.attr("width", 100)
-			.attr("height", "100%");
+			.attr("height", "100%")
+			.style("display", "none");
 			
 	var rect2 =	svg_add.append("rect")
 					.attr("width", 25)
@@ -84,7 +86,7 @@
 	//PROJECTION
 	var albersProjection = d3.geoAlbers()
 	    .scale( 190000 )
-	    .rotate( [71.047,0] )
+	    .rotate( [71.099,0] )
 	    .center( [0, 42.311] )
 	    .translate( [width/2,height/2] );
 
@@ -308,23 +310,23 @@ function dataLoaded(err, bos, sch, gj0, gj1){
 	        .style('stroke-width', 0)
 	//END SCHOOLS ON MAP
 
-	d3.select('#fff')
-		.append('svg')
-			.attr('id', 'svg_clear')
-			.attr('width', 25)
-			.attr('height', 545)			
+	// d3.select('#fff')
+	// 	.append('svg')
+	// 		.attr('id', 'svg_clear')
+	// 		.attr('width', 25)
+	// 		.attr('height', 545)			
 	
 		$(window).scroll(function(){
 		  if($(window).scrollTop() >= 150 && $(window).scrollTop() < 300  ){
-				$(".dd").fadeOut(3000);
+				$(".dd").fadeOut(1500);
 		  //less then 100px from top
 		  } else if ($(window).scrollTop() >= 300 ){
-		    	$("#fff").fadeIn(3000);
+		    	$("#fff").fadeIn(1500);
 				$(".dd").fadeOut();
 
 		  } else {
 		     	$("#fff").fadeOut(1000);
-		     	$(".dd").fadeIn(1600);
+		     	$(".dd").fadeIn(1500);
 		  }
 		});
 
