@@ -475,6 +475,7 @@ function dataLoaded(err, bos, sch, gj0, gj1){
 
 			function clickedRect(){
 				svg.selectAll('.clickRect').remove();
+				svg_add.selectAll(".rects").remove();
 				svg.selectAll('.stop_n_frisks').style('fill','rgb(255,0,0)');
 				selected_GEOs = [];
 				selectedString = '';
