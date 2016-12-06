@@ -1,238 +1,228 @@
-//
-//
 //  Plotting the map
 //	odonnel.p 
 //	CS 7280, AU 2016
 //  zoom functionality based off: https://bl.ocks.org/mbostock/2206590
 //
-//
+//global variables
+var w = d3.select('.plot').node().clientWidth-145,
+	h = d3.select('.plot').node().clientHeight;
+
+var width = d3.select('.plot').node().clientWidth,
+	height = d3.select('.plot').node().clientHeight,
+	centered, mapped_trips,
+	zoomed = false,
+	switch_a = false,
+	rad =2;
 	
-	//global variables
-	var w = d3.select('.plot').node().clientWidth-145,
-    	h = d3.select('.plot').node().clientHeight;
+//RACE COLOR MAPPING
+var raceByTract = d3.map();
 
-	var width = d3.select('.plot').node().clientWidth,
-	    height = d3.select('.plot').node().clientHeight,
-	    centered, mapped_trips,
-	    zoomed = false,
-	    switch_a = false,
-	    rad =2;
-		
-	//RACE COLOR MAPPING
-	var raceByTract = d3.map();
+var raceColors = d3.scaleThreshold()
+	.domain([0,20,40,60,80,100])
+	.range(["#eeeeee", "#d4e5e8", "#bbdde2", "#A2D4DD", "#89CCD7", "#70C4D2"]);
 	
-	var raceColors = d3.scaleThreshold()
-		.domain([0,20,40,60,80,100])
-		.range(["#eeeeee", "#d4e5e8", "#bbdde2", "#A2D4DD", "#89CCD7", "#70C4D2"]);
+//SVG FOR MAP
+var svg = d3.select( ".plot" )
+	.append( "svg" )
+	.attr( "width", w )
+	.attr( "height", h )
+	//.style("stroke", "blue");
+
+	//console.log(w+", "+width);  		
+
+svg.append("rect")
+	.attr("class", "background")
+	.attr("width", width)
+	.attr("height", height)
+	.style('fill', '#fffff9')
+	.on("dblclick", clicked);
+
+//SVG for stacked bar addendum
+var svg_add = d3.select( ".plot" )
+	.append("svg")
+		.attr("class", "addendum")
+		.attr("id", "fff")
+		.attr("width", 66)
+		.attr("height", "100%")
+		.style("display", "none");
 		
-	//SVG FOR MAP
-	var svg = d3.select( ".plot" )
-	    .append( "svg" )
-	    .attr( "width", w )
-	    .attr( "height", h )
-	    //.style("stroke", "blue");
+var rect2 =	svg_add.append("rect")
+				.attr("width", 25)
+				.attr("height", 546)
+				.attr("class", "rect2")
+				.attr("transform", "translate("+22+","+33+")")
+				.style("fill", "none")
+				.style("stroke", "green");
+	svg_add.append('text')
+		.attr("transform", "translate("+(11)+","+(595)+")")
+		.attr("x", 0 )
+		.attr("y", 0 )
+		.text("Selection")
+		.attr("font-family", "Raleway")
+		.attr("font-size", "11px")
+		.attr("font-weight", 500)
+		.attr("fill", "black");
+						 
+							  
+var tooltip = svg_add.append("g")
+	.attr("class", "toolTip")
+	.style("display", null);
 
-	    //console.log(w+", "+width);  		
+tooltip.append("text")
+  .attr("x", 15)
+  .attr("dy", "1.2em")
+  .style("text-anchor", "middle")
+.style("text-align", "center")
+  .attr("font-size", "12px")
+  .attr("font-weight", "bold");	
 
-	svg.append("rect")
-	    .attr("class", "background")
-	    .attr("width", width)
-	    .attr("height", height)
-	    .style('fill', '#fffff9')
-	    .on("click", clicked);
+var g = svg.append( "g" );
+//var g2 = svg.append( "g" );
 
-	//SVG for stacked bar addendum
-	var svg_add = d3.select( ".plot" )
-		.append("svg")
-			.attr("class", "addendum")
-			.attr("id", "fff")
-			.attr("width", 66)
-			.attr("height", "100%")
-			.style("display", "none");
-			
-	var rect2 =	svg_add.append("rect")
-					.attr("width", 25)
-					.attr("height", 546)
-					.attr("class", "rect2")
-					.attr("transform", "translate("+22+","+33+")")
-					.style("fill", "none")
-					.style("stroke", "green");
-		svg_add.append('text')
-			.attr("transform", "translate("+(11)+","+(595)+")")
-			.attr("x", 0 )
-			 .attr("y", 0 )
-			 .text( "Selection")
-			 .attr("font-family", "Raleway")
-			 .attr("font-size", "11px")
-			 .attr("font-weight", 500)
-			 .attr("fill", "black");
-							 
-							 	  
-   var tooltip = svg_add.append("g")
-		.attr("class", "toolTip")
-		.style("display", null);
+//PROJECTION
+var albersProjection = d3.geoAlbers()
+	.scale( 190000 )
+	.rotate( [71.099,0] )
+	.center( [0, 42.311] )
+	.translate( [width/2,height/2] );
 
-	tooltip.append("text")
-	  .attr("x", 15)
-	  .attr("dy", "1.2em")
-	  .style("text-anchor", "middle")
-	.style("text-align", "center")
-	  .attr("font-size", "12px")
-	  .attr("font-weight", "bold");	
+//DRAWING THE PATHS OF geoJSON OBJECTS
+var geoPath = d3.geoPath()
+	.projection( albersProjection );
 
-	var g = svg.append( "g" );
-	//var g2 = svg.append( "g" );
-
-	//PROJECTION
-	var albersProjection = d3.geoAlbers()
-	    .scale( 190000 )
-	    .rotate( [71.099,0] )
-	    .center( [0, 42.311] )
-	    .translate( [width/2,height/2] );
-
-	//DRAWING THE PATHS OF geoJSON OBJECTS
-	var geoPath = d3.geoPath()
-	    .projection( albersProjection );
-
-//
-//
-// queue data, json
-// parse
-//
-//
-
-	d3.queue()
+//LOAD DATA
+d3.queue()
 	.defer(d3.json,'data/CENSUS2010TRACTS_WGS84_geo.json') //bos
-    .defer(d3.csv, 'data/Boston_Public_Schools_2012-2013.csv', parseSchool) //sch
-    .defer(d3.json, 'data/geocodes/boston_police_department_fio_cleaned_2015a.json') //gj0
+	.defer(d3.csv, 'data/Boston_Public_Schools_2012-2013.csv', parseSchool) //sch
+	.defer(d3.json, 'data/geocodes/boston_police_department_fio_cleaned_2015a.json') //gj0
 	.defer(d3.json, 'data/geocodes/boston_police_department_fio_cleaned_2015b.json') //gj1
 	.defer(d3.csv, 'data/percent_white_by_census_tract.csv', function(d) { raceByTract.set(d.id, +d.pc_white); })
-    .await(dataLoaded);
+	.await(dataLoaded);
 
-		function parseDate(e){
+//PARSERS
+
+function parseDate(e){
+
+	var day1 = e.split(' ')[0].split('/');
+	//console.log(day1);
+
+	return new Date("20"+day1[2],+day1[1]-1, +day1[0]);
+}
+
+function parseClothes(e) {
+	var lc = e.toLowerCase();
+	var nsp = lc.replace(/\s\s+/g, ' ');
+	var clothing_list = nsp.split(', ');
+
+	return clothing_list;
+}
+
+function parseSchool(d) {
 	
-	    	var day1 = e.split(' ')[0].split('/');
-	        //console.log(day1);
-
-	    	return new Date("20"+day1[2],+day1[1]-1, +day1[0]);
-		}
-
-		function parseClothes(e) {
-			var lc = e.toLowerCase();
-			var nsp = lc.replace(/\s\s+/g, ' ');
-			var clothing_list = nsp.split(', ');
-
-			return clothing_list;
-		}
-
-	function parseSchool(d) {
-		
-		return {
-			building: d.BLDG_NAME,
-			zip: pad(d.ZIPCODE, 5),
-			school: d.SCH_NAME,
-			type: d.SCH_TYPE,
-			address: parseAddress(d.Location),
-			loc: parseLoc(d.Location)
-		}
-
+	return {
+		building: d.BLDG_NAME,
+		zip: pad(d.ZIPCODE, 5),
+		school: d.SCH_NAME,
+		type: d.SCH_TYPE,
+		address: parseAddress(d.Location),
+		loc: parseLoc(d.Location)
 	}
 
-		function pad(num, size) {
-		    var s = num+"";
-		    while (s.length < size) s = "0" + s;
-		    return s;
-		}
+}
 
-		function parseLoc(e) {
-			var raw = e;
-			var split = e.split( /[(),]+/ );
-			var latLong = [ +split[3], +split[2] ];
-			return latLong;
-		}
+function pad(num, size) {
+	var s = num+"";
+	while (s.length < size) s = "0" + s;
+	return s;
+}
 
-		function parseAddress(e) {
-			var raw = e;
-			var split = e.split( '(' );
-			var address = split[0];
-			return address;
-		}
+function parseLoc(e) {
+	var raw = e;
+	var split = e.split( /[(),]+/ );
+	var latLong = [ +split[3], +split[2] ];
+	return latLong;
+}
 
-		function conjoin_repeats(_sch) {
-			var prev_bldg_name;
-			_sch.forEach( function (obj, i) {
-				
-				if (obj.building.match(prev_bldg_name) && prev_bldg_name != undefined ) { 
-					_sch[i-1].school = [_sch[i-1].school, _sch[i].school];
-					_sch.splice(i, 1);
-				}
-				prev_bldg_name = obj.building;
-			});
-			return _sch;
+function parseAddress(e) {
+	var raw = e;
+	var split = e.split( '(' );
+	var address = split[0];
+	return address;
+}
+
+function conjoin_repeats(_sch) {
+	var prev_bldg_name;
+	_sch.forEach( function (obj, i) {
+		
+		if (obj.building.match(prev_bldg_name) && prev_bldg_name != undefined ) { 
+			_sch[i-1].school = [_sch[i-1].school, _sch[i].school];
+			_sch.splice(i, 1);
 		}
-//
-//
+		prev_bldg_name = obj.building;
+	});
+	return _sch;
+}
+
 // map functions
 // based off of: https://bl.ocks.org/mbostock/2206590
 //
 //
 
-	var sc_rad = function scaleradius () {
+var sc_rad = function scaleradius () {
 
-	    if (zoomed == true){
-	        radius = 5;
-	        return radius
-	    }
-	    if (zoomed == false){
-	        radius = 5;
-	        return radius
-	    }
+	if (zoomed == true){
+		radius = 5;
+		return radius
+	}
+	if (zoomed == false){
+		radius = 5;
+		return radius
+	}
+}
 
+function clicked(d) {
+	var x, y, k;
+
+	if (d && centered !== d) {
+		var centroid = geoPath.centroid(d);
+		x = centroid[0];
+		y = centroid[1];
+		k = 3.5;
+		zoomed = true;
+		centered = d;
+			zoom_squares(5);
+	} else {
+		x = width / 2;
+		y = height / 2;
+		k = 1;
+		zoomed = false;
+		centered = null;
+			zoom_squares(5);
 	}
 
-	function clicked(d) {
-	    var x, y, k;
+	function zoom_squares (_num) {
+		g.selectAll(".square_school")
+			// .attr("width", 2)
+			// .attr("height", 2)
+			.transition()
+				.duration(750)
+				.attr("width", _num)
+				.attr("height", _num);
 
-	    if (d && centered !== d) {
-	        var centroid = geoPath.centroid(d);
-	        x = centroid[0];
-	        y = centroid[1];
-	        k = 3.5;
-	        zoomed = true;
-	        centered = d;
-	        	zoom_squares(5);
-	    } else {
-	        x = width / 2;
-	        y = height / 2;
-	        k = 1;
-	        zoomed = false;
-	        centered = null;
-	        	zoom_squares(5);
-	    }
-
-	    function zoom_squares (_num) {
-		    g.selectAll(".square_school")
-		    	// .attr("width", 2)
-		    	// .attr("height", 2)
-		    	.transition()
-		    		.duration(750)
-		    		.attr("width", _num)
-		    		.attr("height", _num);
-
-		    g.selectAll('stop_n_frisks')
-		    	.transition()
-		    		.duration(750)
-		    		.attr("width", 1)
-		    		.attr("height", 1);
-		}
-
-	    g.selectAll(".neighborhoods")
-	        .classed("active", centered && function(d) { return d === centered; });
-
-	    g.transition()
-	        .duration(750)
-	        .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")scale(" + k + ")translate(" + -x + "," + -y + ")")
+		g.selectAll('stop_n_frisks')
+			.transition()
+				.duration(750)
+				.attr("width", 1)
+				.attr("height", 1);
 	}
+
+	g.selectAll(".neighborhoods")
+		.classed("active", centered && function(d) { return d === centered; });
+
+	g.transition()
+		.duration(750)
+		.attr("transform", "translate(" + width / 2 + "," + height / 2 + ")scale(" + k + ")translate(" + -x + "," + -y + ")")
+}
 
 //
 //
@@ -257,17 +247,17 @@ function dataLoaded(err, bos, sch, gj0, gj1){
         .enter()
         .append('path')
         .attr('class', 'boston neighborhoods')
-	    .style('fill', function(d,i) {return raceColors(raceByTract.get(d.id)); })
+	    .style('fill', function(d,i) { return raceColors(raceByTract.get(d.id)); })
         .attr( 'd', geoPath )
 		.style("stroke","#fffff9")
-		.style("stroke-width",1)
+		.style("stroke-width",1);
         //.attr('transform', 'translate(-10,0)')
-        .on("click", clicked);
-    //END OF NEIGHBORHOODS ON MAP
+        //.on("click", clicked);
+	//END OF NEIGHBORHOODS ON MAP
 
     //APPEND STOP AND FRISKS ON MAP
-	 var radi = 1.1;
-	 g.selectAll('.stop_n_frisks')
+	var radi = 1.1;
+	g.selectAll('.stop_n_frisks')
 	 	.data( geos )
 	 	.enter()
 	 	.append('circle')
@@ -283,12 +273,11 @@ function dataLoaded(err, bos, sch, gj0, gj1){
         .attr('r', radi)
 	        .style('fill', 'rgb(255,0,0)')
 	        .style('stroke-width', 0)
-	        .style('opacity', .12)
-	        //.attr('transform', 'translate(-30,0)')
-	        // .on("click", clicked);
-	 //END STOP AND FRISKS ON MAP
-
-
+	        .style('opacity', .12);
+	        //.attr('transform', 'translate(-30,0)');
+	
+	//END STOP AND FRISKS ON MAP
+	
     //APPEND SCHOOLS ON MAP
     var square = 4;
     //Plot schools as squares
@@ -329,102 +318,101 @@ function dataLoaded(err, bos, sch, gj0, gj1){
 		     	$(".dd").fadeIn(1500);
 		  }
 		});
+	
+	//BRUSH, courtesy of an example of E. Gunn		
+	var brush = d3.brush()
+		.on("end", brushed);
 
-//
-//
-// BRUSH, courtesy of an example of E. Gunn
-//
-//		
-		var brush = d3.brush()
-			.on("end", brushed);
+	var gBrush = svg.append("g")
+		.attr("class", "brush")
+		.call(brush);
 
-		var gBrush = svg.append("g")
-			.attr("class", "brush")
-			.call(brush);
+	geos.forEach( function(d) {
+		d.properties.description = 	d.properties.description.replace(')', '').split('(')[1];
+	})
 
-		geos.forEach( function(d) {
-			d.properties.description = 	d.properties.description.replace(')', '').split('(')[1];
-		})
+	var centers = geos.map(function (d) {
 
-		var centers = geos.map(function (d) {
+		var centroid = geoPath.centroid(d); //provides two numbers [x,y] indicating the screen coordinates of the state
+		//Puerto Rico returns NaN, sends error to the console. Also, something wrong with UT data - no fill color assigned.
 
-			var centroid = geoPath.centroid(d); //provides two numbers [x,y] indicating the screen coordinates of the state
-			//Puerto Rico returns NaN, sends error to the console. Also, something wrong with UT data - no fill color assigned.
-
-			return {
-				id: d.properties.id,
-				description: d.properties.description,
-				x0: centroid[0],
-				y0: centroid[1],
-				x: centroid[0],
-				y: centroid[1]
-			}
-		});
-
-		var selected_GEOs = [];
-
-		function brushed() {
-
-			clickRect = svg.append('rect')
-				.attr('width',600)
-				.attr('height',400)
-				.attr('class', 'clickRect')
-				.style('fill','none')
-				.attr('pointer-events', 'all')
-				.on('click',clickedRect);
-
-
-			function clickedRect(){
-				svg.selectAll('.clickRect').remove();
-				svg_add.selectAll(".rects").remove();
-				svg.selectAll('.stop_n_frisks').style('fill','rgb(255,0,0)');
-				selected_GEOs = [];
-				selectedString = '';
-			}
-
-			var s = d3.event.selection; //returns the brush selection region
-				if (s != null){
-					var bx0 = s[0][0], //get the x0 position from the brush selection
-						by0 = s[0][1],
-						bx1 = s[1][0],
-						by1 = s[1][1],
-						bdx = bx1 - bx0,
-						bdy = by1 - by0,
-						max = 0;
-
-					var selected_GEOArray = [];
-
-					centers.forEach(function(d){
-						if (  ((bx0 < d.x0 && d.x0 < bx1) && (by0 < d.y0 && d.y0 < by1)) || ((bx0 > d.x0 && d.x0 > bx1) && (by0 > d.y0 && d.y0 > by1)) ){
-							//console.log(d);
-							selected_GEOs.push(d);
-							selected_GEOArray.push(d.description);
-						}
-					});
-
-					var selectedString = "";
-
-					selected_GEOs.forEach(function(d,i){
-						if (i < selected_GEOs.length - 1){
-							selectedString = selectedString + "#sf" + d.id + ","
-						}
-						else {
-							selectedString = selectedString + "#sf" + d.id
-						}
-					});
-
-					svg.selectAll(".stop_n_frisks").style("fill", "white");
-					svg.selectAll(selectedString).style('fill','rgb(255,0,0)');
-
-					draw_chart_addendum(geos,selected_GEOArray);
-
-					var invert1 = albersProjection.invert(s[0]);
-					var invert2 = albersProjection.invert(s[1]);
-
-				}
-
+		return {
+			id: d.properties.id,
+			description: d.properties.description,
+			x0: centroid[0],
+			y0: centroid[1],
+			x: centroid[0],
+			y: centroid[1]
 		}
-		
+	});
+
+	var selected_GEOs = [];
+
+	function brushed() {
+
+		clickRect = svg.append('rect')
+			.attr('width',600)
+			.attr('height',400)
+			.attr('class', 'clickRect')
+			.style('fill','none')
+			.attr('pointer-events', 'all')
+			.on('click',clickedRect);
+
+		function clickedRect(){
+			svg.selectAll('.clickRect').remove();
+			svg_add.selectAll(".rects").remove();
+			d3.select(".selectionText")
+				.text("Click/drag to select an area");
+			
+			svg.selectAll('.stop_n_frisks').style('fill','rgb(255,0,0)');
+			selected_GEOs = [];
+			selectedString = '';
+		}
+
+		var s = d3.event.selection; //returns the brush selection region
+			if (s != null){
+				var bx0 = s[0][0], //get the x0 position from the brush selection
+					by0 = s[0][1],
+					bx1 = s[1][0],
+					by1 = s[1][1],
+					bdx = bx1 - bx0,
+					bdy = by1 - by0,
+					max = 0;
+
+				var selected_GEOArray = [];
+
+				centers.forEach(function(d){
+					if (  ((bx0 < d.x0 && d.x0 < bx1) && (by0 < d.y0 && d.y0 < by1)) || ((bx0 > d.x0 && d.x0 > bx1) && (by0 > d.y0 && d.y0 > by1)) ){
+						//console.log(d);
+						selected_GEOs.push(d);
+						selected_GEOArray.push(d.description);
+					}
+				});
+				
+				var numIncidentsInBrush = selected_GEOs.length;
+				d3.select(".selectionText")
+					.text(numIncidentsInBrush + " incidents selected");
+
+				var selectedString = "";
+
+				selected_GEOs.forEach(function(d,i){
+					if (i < numIncidentsInBrush - 1){
+						selectedString = selectedString + "#sf" + d.id + ","
+					}
+					else {
+						selectedString = selectedString + "#sf" + d.id
+					}
+				});
+
+				svg.selectAll(".stop_n_frisks").style("fill", "white");
+				svg.selectAll(selectedString).style('fill','rgb(255,0,0)');
+
+				draw_chart_addendum(geos,selected_GEOArray);
+
+				var invert1 = albersProjection.invert(s[0]);
+				var invert2 = albersProjection.invert(s[1]);
+			}
+	}
 	
 	function draw_chart_addendum ( _geos, _array) {
 
