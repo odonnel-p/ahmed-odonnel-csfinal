@@ -129,7 +129,7 @@
 //
 
 	d3.queue()
-    .defer(d3.csv,'data/Boston_Police_Department_FIO_CLEANED.csv', parse) //rows
+    //.defer(d3.csv,'data/Boston_Police_Department_FIO_CLEANED.csv', parse) //rows
 	.defer(d3.json,'data/CENSUS2010TRACTS_WGS84_geo.json') //bos
     .defer(d3.csv, 'data/Boston_Public_Schools_2012-2013.csv', parseSchool) //sch
     .defer(d3.json, 'data/geocodes/boston_police_department_fio_cleaned_2015a.json') //gj0
@@ -138,25 +138,25 @@
     .await(dataLoaded);
 
 
-    function parse(d){
-	    //if(+d.duration<0) return;
+ //    function parse(d){
+	//     console.log(d);
 
-	    return {
-	    	ID: d.Id,
-	    	sex: d.SEX,
-	    	locDescipt: d.LOCATION,
-	    	date: parseDate(d.FIO_DATE_CORRECTED),
-	    	race_description: d.DESCRIPTION.replace(')', '').split('('),
-	    	complexion: d.COMPLEXION,
-	    	fio: d.FIOFS_TYPE.split(''),
-	    	outcome: d.OUTCOME.split(''),
-	   		clothes: parseClothes(d.CLOTHING),
-	    	age: +d.AGE_AT_FIO_CORRECTED,
-	    	reason_stop: d.STOP_REASONS,
-	    	reason_fio: d.FIOFS_REASONS
-	    }
+	//     return {
+	//     	ID: d.Id,
+	//     	sex: d.SEX,
+	//     	// locDescipt: d.LOCATION,
+	//     	date: parseDate(d.FIO_DATE_CORRECTED),
+	//     	race_description: d.DESCRIPTION.replace(')', '').split('('),
+	//     	complexion: d.COMPLEXION,
+	//     	fio: d.FIOFS_TYPE.split(''),
+	//     	outcome: d.OUTCOME.split(''),
+	//    		clothes: parseClothes(d.CLOTHING),
+	//     	age: +d.AGE_AT_FIO_CORRECTED,
+	//     	reason_stop: d.STOP_REASONS,
+	//     	reason_fio: d.FIOFS_REASONS
+	//     }
 
-	}
+	// }
 
 		function parseDate(e){
 	
@@ -306,7 +306,7 @@
 //
 //
 
-function dataLoaded(err, rows, bos, sch, gj0, gj1){
+function dataLoaded(err, bos, sch, gj0, gj1){
         
 	//ROWS is stop and frisk data
 	//console.log(rows); // 152230 rows
@@ -424,7 +424,13 @@ function dataLoaded(err, rows, bos, sch, gj0, gj1){
 			.attr("class", "brush")
 			.call(brush);
 
-		
+		geos.forEach( function(d) {
+
+			d.features.forEach( function(e) {
+				e.properties.description = 	e.properties.description.replace(')', '').split('(')[1];
+
+			})
+		})
 
 		console.log(geos);
 
@@ -519,14 +525,100 @@ function dataLoaded(err, rows, bos, sch, gj0, gj1){
 	function draw_chart_addendum ( _geos, _array) {
 
 		console.log(_array);
+
 	}		
 
+			var y = d3.scaleLinear()
+		    .rangeRound([get_chart_h, 0]);
 
-//
-//
-// Brush 
-//
-//
+		var z = d3.scaleOrdinal()
+		    .range(["#7fc97f", "#beaed4", "#fdc086", "#ffff99", "#386cb0", "#f0027f", "#bf5b17"]);
+
+		var stack = d3.stack()
+		    .offset(d3.stackOffsetExpand);
+			
+		var lastHovered;
+
+		d3.csv("data/chart1data.csv", type, function(error, data) {
+		  if (error) throw error;
+
+		  x.domain(data.map(function(d) { return d.Year; }));
+		  z.domain(data.columns.slice(1));
+
+		  var serie = svg2.selectAll(".serie")
+		    .data(stack.keys(data.columns.slice(1))(data))
+		    .enter()
+		      .append("g")
+		      .attr("class", "serie")
+		      .attr("id", function(d) { return d.key })
+		      .attr("fill", function(d) { return z(d.key); });
+			  
+		  var tooltip = svg2.append("g")
+			.attr("class", "toolTip")
+			.style("display", null);
+
+		  tooltip.append("text")
+		    .attr("x", 15)
+		    .attr("dy", "1.2em")
+		    .style("text-anchor", "middle")
+			.style("text-align", "center")
+		    .attr("font-size", "12px")
+		    .attr("font-weight", "bold");	
+
+		  serie.selectAll("rect")
+		    .data(function(d) { return d; })
+			.enter().append("rect")
+		      .attr("x", function(d) { return x(d.data.Year); })
+		      .attr("y", function(d) { return y(d[1]); })
+		      .attr("height", function(d) { return y(d[0]) - y(d[1]); })
+		      .attr("width", x.bandwidth())
+			  .on("mouseover", function(d) { 
+		      		tooltip.style("display", null);
+		      		d3.select(this)
+		      			.attr("stroke","red")
+		      			.attr("stroke-width", 2)
+					var e = document.querySelectorAll(':hover');
+					var ind = e[6].__data__.index;
+					lastHovered = ind;
+		 			d3.select(serie._groups[0][ind].children[5])
+						.style("stroke","red")
+						.style("stroke-width", 2); 
+		            })
+			  .on("mouseout", function(d) { 
+		      		tooltip.style("display", "none");
+		      		d3.select(this)
+		      			.attr("stroke","none");
+					d3.select(serie._groups[0][lastHovered].children[5])
+						.style("stroke","none");
+					})
+			  .on("mousemove", function(d) {
+		      		var xPosition = d3.mouse(this)[0] - 10;
+		      		var yPosition = d3.mouse(this)[1] + 16;
+		      		var elements = document.querySelectorAll(':hover');
+		      		var race = elements[6].__data__.key;
+		      		tooltip.attr("transform", "translate(" + xPosition + "," + yPosition + ")");
+		      		tooltip.select("text").text(race + ": "  + roundToOneDecimal(100*(d[1]-d[0])) + '%');
+		      	  });
+
+		  svg2.append("g")
+		    .attr("class", "axis axis--x")
+		    .attr("transform", "translate(0," + get_chart_h + ")")
+		    .call(d3.axisBottom(x));
+		});
+
+		function type(d, i, columns) {
+		  for (i = 1, t = 0; i < columns.length; ++i) t += d[columns[i]] = +d[columns[i]];
+		  d.total = t;
+		  return d;
+		}
+
+		function roundToOneDecimal(num) {
+			var rounded = Math.round( num * 10 ) / 10;
+			return rounded;
+		}
+
+
+
 	
 
     

@@ -30,6 +30,7 @@ d3.csv("data/chart1data.csv", type, function(error, data) {
     .enter()
       .append("g")
       .attr("class", "serie")
+      .attr("id", function(d) { return d.key })
       .attr("fill", function(d) { return z(d.key); });
 	  
   var tooltip = svg2.append("g")
@@ -95,3 +96,4 @@ function roundToOneDecimal(num) {
 	var rounded = Math.round( num * 10 ) / 10;
 	return rounded;
 }
+
