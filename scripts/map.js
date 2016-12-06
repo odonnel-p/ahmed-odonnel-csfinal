@@ -6,9 +6,7 @@
 //  zoom functionality based off: https://bl.ocks.org/mbostock/2206590
 //
 //
-
-
-
+	
 	//global variables
 	var w = d3.select('.plot').node().clientWidth-145,
     	h = d3.select('.plot').node().clientHeight;
@@ -43,31 +41,42 @@
 	    .style('fill', '#fffff9')
 	    .on("click", clicked);
 
-	    //SVG for stacked bar addendum
-	    		var svg_add = d3.select( ".plot" )
-	    			.append("svg")
-	    				.attr("class", "addendum")
-	    				.attr("width", 100)
-	    				.attr("height", "100%")
-	    				//.style("stroke", "red")
+	//SVG for stacked bar addendum
+	var svg_add = d3.select( ".plot" )
+		.append("svg")
+			.attr("class", "addendum")
+			.attr("width", 100)
+			.attr("height", "100%");
+			
+	var rect2 =	svg_add.append("rect")
+					.attr("width", 25)
+					.attr("height", 546)
+					.attr("class", "rect2")
+					.attr("transform", "translate("+22+","+33+")")
+					.style("fill", "none")
+					.style("stroke", "green");
+		svg_add.append('text')
+			.attr("transform", "translate("+(11)+","+(595)+")")
+			.attr("x", 0 )
+			 .attr("y", 0 )
+			 .text( "Selection")
+			 .attr("font-family", "Raleway")
+			 .attr("font-size", "11px")
+			 .attr("font-weight", 500)
+			 .attr("fill", "black");
+							 
+							 	  
+   var tooltip = svg_add.append("g")
+		.attr("class", "toolTip")
+		.style("display", null);
 
-	    		var rect2 =	svg_add.append("rect")
-				    			.attr("width", 25)
-				    			.attr("height", 546)
-				    			.attr("class", "rect2")
-								.attr("transform", "translate("+22+","+33+")")
-								.style("fill", "none")
-				    			.style("stroke", "green");
-				    			//.style("stroke", "orange");
-				    svg_add.append('text')
-				    		.attr("transform", "translate("+(11)+","+(595)+")")
-				    		.attr("x", 0 )
-			                 .attr("y", 0 )
-			                 .text( "Selection")
-			                 .attr("font-family", "Raleway")
-			                 .attr("font-size", "11px")
-			                 .attr("font-weight", 500)
-			                 .attr("fill", "black");
+	tooltip.append("text")
+	  .attr("x", 15)
+	  .attr("dy", "1.2em")
+	  .style("text-anchor", "middle")
+	.style("text-align", "center")
+	  .attr("font-size", "12px")
+	  .attr("font-weight", "bold");	
 
 	var g = svg.append( "g" );
 	//var g2 = svg.append( "g" );
@@ -83,61 +92,6 @@
 	var geoPath = d3.geoPath()
 	    .projection( albersProjection );
 
-
-//
-//
-// adding the brush
-// from: http://bl.ocks.org/mbostock/f48fcdb929a620ed97877e4678ab15e6
-//
-//
-
-
-			// var brush = d3.brush().on("end", brushended),
-			//     idleTimeout,
-			//     idleDelay = 350;
-
-			// var k = height / width,
-			//     x0 = albersProjection([-70.922, -71.195]),
-			//     y0 = albersProjection([42.404, -42.23]),
-			//     x = d3.scaleLinear().domain(x0).range([0, w]),
-			//     y = d3.scaleLinear().domain(y0).range([h, 0]);
-			//     //z = d3.scaleOrdinal(d3.schemeCategory10);
-
-
-
-
-			//push up to brushended()
-			// 		  var s = d3.event.selection;
-			// 		  if (!s) {
-			// 		    if (!idleTimeout) return idleTimeout = setTimeout(idled, idleDelay);
-			// 		    x.domain(x0);
-			// 		    y.domain(y0);
-			// 		    //undraw_chart_addendum();
-			// 		  } else {
-			// 		    x.domain([s[0][0], s[1][0]].map(x.invert, x));
-			// 		    y.domain([s[1][1], s[0][1]].map(y.invert, y));
-			// 		    svg.select(".brush").call(brush.move, null);
-			// 		    draw_chart_addendum();
-			// 		  }
-			// 		  console.log("brushended, ended.");
-			// 		}
-
-			// function idled() {
-			// 		  idleTimeout = null;
-			// 		}
-
-			// function draw_chart_addendum() {
-			// 		  // var t = svg.transition().duration(750);
-			// 		  // svg.select(".axis--x").transition(t).call(xAxis);
-			// 		  // svg.select(".axis--y").transition(t).call(yAxis);
-			// 		  // svg.selectAll("circle").transition(t)
-			// 		  //     .attr("cx", function(d) { return x(d[0]); })
-			// 		  //     .attr("cy", function(d) { return y(d[1]); });
-			// 		  console.log("chart_addendum drawn");
-			// 		}
-
- 
-
 //
 //
 // queue data, json
@@ -146,34 +100,12 @@
 //
 
 	d3.queue()
-    //.defer(d3.csv,'data/Boston_Police_Department_FIO_CLEANED.csv', parse) //rows
 	.defer(d3.json,'data/CENSUS2010TRACTS_WGS84_geo.json') //bos
     .defer(d3.csv, 'data/Boston_Public_Schools_2012-2013.csv', parseSchool) //sch
     .defer(d3.json, 'data/geocodes/boston_police_department_fio_cleaned_2015a.json') //gj0
 	.defer(d3.json, 'data/geocodes/boston_police_department_fio_cleaned_2015b.json') //gj1
 	.defer(d3.csv, 'data/percent_white_by_census_tract.csv', function(d) { raceByTract.set(d.id, +d.pc_white); })
     .await(dataLoaded);
-
-
- //    function parse(d){
-	//     console.log(d);
-
-	//     return {
-	//     	ID: d.Id,
-	//     	sex: d.SEX,
-	//     	// locDescipt: d.LOCATION,
-	//     	date: parseDate(d.FIO_DATE_CORRECTED),
-	//     	race_description: d.DESCRIPTION.replace(')', '').split('('),
-	//     	complexion: d.COMPLEXION,
-	//     	fio: d.FIOFS_TYPE.split(''),
-	//     	outcome: d.OUTCOME.split(''),
-	//    		clothes: parseClothes(d.CLOTHING),
-	//     	age: +d.AGE_AT_FIO_CORRECTED,
-	//     	reason_stop: d.STOP_REASONS,
-	//     	reason_fio: d.FIOFS_REASONS
-	//     }
-
-	// }
 
 		function parseDate(e){
 	
@@ -190,8 +122,6 @@
 
 			return clothing_list;
 		}
-
-		
 
 	function parseSchool(d) {
 		
@@ -216,7 +146,6 @@
 			var raw = e;
 			var split = e.split( /[(),]+/ );
 			var latLong = [ +split[3], +split[2] ];
-			//console.log(latLong);
 			return latLong;
 		}
 
@@ -224,7 +153,6 @@
 			var raw = e;
 			var split = e.split( '(' );
 			var address = split[0];
-			//console.log(split);
 			return address;
 		}
 
@@ -233,14 +161,11 @@
 			_sch.forEach( function (obj, i) {
 				
 				if (obj.building.match(prev_bldg_name) && prev_bldg_name != undefined ) { 
-					//console.log(prev_bldg_name+" MATCHED "+obj.building) 
 					_sch[i-1].school = [_sch[i-1].school, _sch[i].school];
-					//console.log( sch[i-1].school );
 					_sch.splice(i, 1);
 				}
 				prev_bldg_name = obj.building;
 			});
-			//console.log(_sch);
 			return _sch;
 		}
 //
@@ -264,7 +189,6 @@
 	}
 
 	function clicked(d) {
-	    //console.log(x+', '+y+', '+k)
 	    var x, y, k;
 
 	    if (d && centered !== d) {
@@ -299,18 +223,14 @@
 		    		.attr("width", 1)
 		    		.attr("height", 1);
 		}
-	    //console.log(x+', '+y+', '+k)
 
 	    g.selectAll(".neighborhoods")
 	        .classed("active", centered && function(d) { return d === centered; });
 
-
 	    g.transition()
 	        .duration(750)
 	        .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")scale(" + k + ")translate(" + -x + "," + -y + ")")
-	    //.style("stroke-width", 1.5 / k + "px");
 	}
-
 
 //
 //
@@ -319,16 +239,11 @@
 //
 
 function dataLoaded(err, bos, sch, gj0, gj1){
-        
-	//ROWS is stop and frisk data
-	//console.log(rows); // 152230 rows
 	
-
 	//SCH, SCH2 is boston school locations
 	var sch2 = conjoin_repeats(sch); 
-	//console.log(sch2);
 
-	//GEOS is geojsons with locations for stop and frisks, 
+	//GEOS is geojsons with locations for stop and frisks
 	var geos = gj0.features
 				.concat(gj1.features);
 
@@ -363,7 +278,6 @@ function dataLoaded(err, bos, sch, gj0, gj1){
         .attr('cy', function(f) {
             var xy = albersProjection(f.geometry.coordinates);
             return xy[1]; })
-        //.transition(750)
         .attr('r', radi)
 	        .style('fill', 'rgb(255,0,0)')
 	        .style('stroke-width', 0)
@@ -383,33 +297,24 @@ function dataLoaded(err, bos, sch, gj0, gj1){
         .attr('class', 'square_school')
         .attr('school_num', function(d,i) { return 's'+i })
         .attr('x', function(f) {
-         	//console.log(f.loc[0]+", "+f.loc[1])
             var xy = albersProjection(f.loc);
-            //console.log(xy[0]+", "+xy[1])
             return xy[0]; })
         .attr('y', function(f) {
             var xy = albersProjection(f.loc);
             return xy[1]; })
-        //.transition(750)
         .attr('width', square)
         .attr('height', square)
-        //.attr('transform', 'translate(-30,0)')
 	        .style('fill', '#171717')
 	        .style('stroke-width', 0)
-	        //.on("click", clicked);
 	//END SCHOOLS ON MAP
 
 	d3.select('#fff')
 		.append('svg')
 			.attr('id', 'svg_clear')
 			.attr('width', 25)
-			.attr('height', 545)
-			// .style('outline', 'dashed 1px #aaa')
-			// .style('outline-offset', '-10px')
-			
+			.attr('height', 545)			
 	
 		$(window).scroll(function(){
-		  //more then or equals to
 		  if($(window).scrollTop() >= 150 && $(window).scrollTop() < 300  ){
 				$(".dd").fadeOut(3000);
 		  //less then 100px from top
@@ -429,24 +334,18 @@ function dataLoaded(err, bos, sch, gj0, gj1){
 //
 //		
 		var brush = d3.brush()
-		//.on("start brush", brushed)
-		.on("end", brushed);
+			.on("end", brushed);
 
 		var gBrush = svg.append("g")
 			.attr("class", "brush")
 			.call(brush);
 
 		geos.forEach( function(d) {
-			//console.log(d);
 			d.properties.description = 	d.properties.description.replace(')', '').split('(')[1];
-
 		})
-
-		//console.log(geos);
 
 		var centers = geos.map(function (d) {
 
-			//console.log(d);
 			var centroid = geoPath.centroid(d); //provides two numbers [x,y] indicating the screen coordinates of the state
 			//Puerto Rico returns NaN, sends error to the console. Also, something wrong with UT data - no fill color assigned.
 
@@ -501,11 +400,6 @@ function dataLoaded(err, bos, sch, gj0, gj1){
 						}
 					});
 
-					// console.log(selected_GEOs);
-					// console.log(selected_GEOArray);
-
-					//svg.selectAll('.stop_n_frisks').style('fill','orange');
-
 					var selectedString = "";
 
 					selected_GEOs.forEach(function(d,i){
@@ -516,9 +410,6 @@ function dataLoaded(err, bos, sch, gj0, gj1){
 							selectedString = selectedString + "#sf" + d.id
 						}
 					});
-
-					//console.log(selectedString);
-					//see if 510 works
 
 					svg.selectAll(".stop_n_frisks").style("fill", "white");
 					svg.selectAll(selectedString).style('fill','rgb(255,0,0)');
@@ -534,12 +425,8 @@ function dataLoaded(err, bos, sch, gj0, gj1){
 		
 	
 	function draw_chart_addendum ( _geos, _array) {
-		//console.log(_array);
 
 		var occur = array_occur(_array);
-
-		//console.log(occur);
-
 		var occur2 = make_array_of_objs(occur[0], occur[1]);
 		console.log(occur2);
 
@@ -560,11 +447,8 @@ function dataLoaded(err, bos, sch, gj0, gj1){
 		var stack = d3.stack()
 		    .offset(d3.stackOffsetExpand);
 
-		var prev=0;
-
-		//x.domain(data.map(function(d) { return d.Year; }));
-		 //z.domain(data.columns.slice(1));
-
+		var prev = 0;
+		
 		var serie = svg_add.selectAll(".rects")
 		    .data(occur2)
 		    .enter()
@@ -580,140 +464,92 @@ function dataLoaded(err, bos, sch, gj0, gj1){
 				})
 				.attr("width", 25)
 				.attr("transform", "translate("+22+","+33+")")
-				//.style("fill", "#ddd");
 		      	.attr("height", function(d) { return y(d.percentage); }) //y(d.percentage);
-		   
-			  // .on("mouseover", function(d) { 
-		   //    		tooltip.style("display", null);
-		   //    		d3.select(this)
-		   //    			.attr("stroke","red")
-		   //    			.attr("stroke-width", 2)
-					// var e = document.querySelectorAll(':hover');
-					// var ind = e[6].__data__.index;
-					// lastHovered = ind;
-		 		// 	d3.select(serie._groups[0][ind].children[5])
-					// 	.style("stroke","red")
-					// 	.style("stroke-width", 2); 
-		   //          })
-			  // .on("mouseout", function(d) { 
-		   //    		tooltip.style("display", "none");
-		   //    		d3.select(this)
-		   //    			.attr("stroke","none");
-					// d3.select(serie._groups[0][lastHovered].children[5])
-					// 	.style("stroke","none");
-					// })
-			  // .on("mousemove", function(d) {
-		   //    		var xPosition = d3.mouse(this)[0] - 10;
-		   //    		var yPosition = d3.mouse(this)[1] + 16;
-		   //    		var elements = document.querySelectorAll(':hover');
-		   //    		var race = elements[6].__data__.key;
-		   //    		tooltip.attr("transform", "translate(" + xPosition + "," + yPosition + ")");
-		   //    		tooltip.select("text").text(race + ": "  + roundToOneDecimal(100*(d[1]-d[0])) + '%');
-		   //    	  });
-
+/* 			    .on("mouseover", function(d) { 
+					tooltip.style("display", null);
+					d3.select(this)
+						.attr("stroke","red")
+						.attr("stroke-width", 2)
+		        })
+			    .on("mouseout", function(d) { 
+					tooltip.style("display", "none");
+					d3.select(this)
+					.attr("stroke","none");
+			    })  
+			    .on("mousemove", function(d) {
+					var xPosition = d3.mouse(this)[0] - 10;
+					var yPosition = d3.mouse(this)[1] + 16;
+					var elements = document.querySelectorAll(':hover');
+					var race = elements[6].__data__.race;
+					tooltip.attr("transform", "translate(" + xPosition + "," + yPosition + ")");
+					tooltip.select("text").text(race + ": "  + roundToOneDecimal(d.percentage) + '%');
+					tooltip.moveToFront();
+			    }); */
 	}		
 
-	
+	function type(d, i, columns) {
+	  for (i = 1, t = 0; i < columns.length; ++i) t += d[columns[i]] = +d[columns[i]];
+	  d.total = t;
+	  return d;
+	}
 
-		
+	function roundToOneDecimal(num) {
+		var rounded = Math.round( num * 10 ) / 10;
+		return rounded;
+	}
 
-		
+	function array_occur(arr) {
 
-		  
+		arr.forEach ( function(d,i) { 
+				//console.log(d);
+				if(d==null) {return arr[i] = "Data Unavailable";}
+				if(d=="Middle Eastern or East Indian") {return arr[i] = "Middle Eastern";}
+				if(d=="Asian or Pacific Islander") {return arr[i] = "Asian";}
+				// if(d=={ d = "Middle Eastern"; }
+		});
 
-		  
-			  
-		//   var tooltip = svg2.append("g")
-		// 	.attr("class", "toolTip")
-		// 	.style("display", null);
+		//console.log(arr);
 
-		//   tooltip.append("text")
-		//     .attr("x", 15)
-		//     .attr("dy", "1.2em")
-		//     .style("text-anchor", "middle")
-		// 	.style("text-align", "center")
-		//     .attr("font-size", "12px")
-		//     .attr("font-weight", "bold");	
+		var a = [], b = [], prev, c = {};
 
-		  
+		arr.sort();
+		//console.log(arr);
 
-		//   svg2.append("g")
-		//     .attr("class", "axis axis--x")
-		//     .attr("transform", "translate(0," + get_chart_h + ")")
-		//     .call(d3.axisBottom(x));
-		// });
-
-		function type(d, i, columns) {
-		  for (i = 1, t = 0; i < columns.length; ++i) t += d[columns[i]] = +d[columns[i]];
-		  d.total = t;
-		  return d;
+		for ( var i = 0; i < arr.length; i++ ) {
+			if ( arr[i] !== prev ) {
+				a.push(arr[i]);
+				b.push(1);
+			} else {
+				b[b.length-1]++;
+			}
+			prev = arr[i];
 		}
-
-		function roundToOneDecimal(num) {
-			var rounded = Math.round( num * 10 ) / 10;
-			return rounded;
-		}
-
-		function array_occur(arr) {
-
-			arr.forEach ( function(d,i) { 
-					//console.log(d);
-					if(d==null) {return arr[i] = "Data Unavailable";}
-					if(d=="Middle Eastern or East Indian") {return arr[i] = "Middle Eastern";}
-					if(d=="Asian or Pacific Islander") {return arr[i] = "Asian";}
-					// if(d=={ d = "Middle Eastern"; }
-			});
-
-			//console.log(arr);
-
-		    var a = [], b = [], prev, c = {};
-
-		    arr.sort();
-		    //console.log(arr);
-
-		    for ( var i = 0; i < arr.length; i++ ) {
-		        if ( arr[i] !== prev ) {
-		            a.push(arr[i]);
-		            b.push(1);
-		        } else {
-		            b[b.length-1]++;
-		        }
-		        prev = arr[i];
-		    }
-		    return [a, b];
-		}
+		return [a, b];
+	}
 
 
-		function make_array_of_objs(_a, _b){
+	function make_array_of_objs(_a, _b){
 
-			var sum = 0;
-				for (var i = 0; i < _b.length; i++) { 
-					sum = sum + _b[i];
-				}
+		var sum = 0;
+			for (var i = 0; i < _b.length; i++) { 
+				sum = sum + _b[i];
+			}
 
-			var percent = [];
-				for (var i = 0; i < _b.length; i++) { 
-					percent[i] = _b[i]/sum*100;
-				}
+		var percent = [];
+			for (var i = 0; i < _b.length; i++) { 
+				percent[i] = _b[i]/sum*100;
+			}
 
-			var result = [];
-			var obj = {};
-				for (var i = 0; i < _a.length; i++) { 
-					obj = {
-						race: _a[i],
-						num_of_incidents: _b[i],
-						percentage: percent[i]
-					};
-					result.push(obj)
-				}
-			return result;
-		}
-	
-
-    
-    
-
+		var result = [];
+		var obj = {};
+			for (var i = 0; i < _a.length; i++) { 
+				obj = {
+					race: _a[i],
+					num_of_incidents: _b[i],
+					percentage: percent[i]
+				};
+				result.push(obj)
+			}
+		return result;
+	}
 } //end of dataLoaded
-
-
-
