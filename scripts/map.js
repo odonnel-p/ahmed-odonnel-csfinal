@@ -46,7 +46,7 @@
 		.append("svg")
 			.attr("class", "addendum")
 			.attr("id", "fff")
-			.attr("width", 50)
+			.attr("width", 66)
 			.attr("height", "100%")
 			.style("display", "none");
 			
