@@ -98,8 +98,8 @@ body {
     .plot {
         overflow: hidden;
         float:left;
-        width: 70%;
-        height: 700px;
+        width: 75%;
+        height: 600px;
         /*background-color: #eee;*/
         /*margin-left: -40px;*/
     }

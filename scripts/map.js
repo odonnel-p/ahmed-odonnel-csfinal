@@ -10,7 +10,7 @@
 
 
 	//global variables
-	var w = d3.select('.plot').node().clientWidth,
+	var w = d3.select('.plot').node().clientWidth-145,
     	h = d3.select('.plot').node().clientHeight;
 
 	var width = d3.select('.plot').node().clientWidth,
@@ -31,7 +31,8 @@
 	var svg = d3.select( ".plot" )
 	    .append( "svg" )
 	    .attr( "width", w )
-	    .attr( "height", h );
+	    .attr( "height", h )
+	    //.style("stroke", "blue");
 
 	    //console.log(w+", "+width);  		
 
@@ -43,12 +44,30 @@
 	    .on("click", clicked);
 
 	    //SVG for stacked bar addendum
-	    		var svg_add = svg.append("rect")
-	    			.attr("width", 25)
-	    			.attr("height", 546)
-					.attr("transform", "translate("+(w-55)+",4)")
-	    			.style("fill", "#ddd");
-	    			//.style("stroke", "orange");
+	    		var svg_add = d3.select( ".plot" )
+	    			.append("svg")
+	    				.attr("class", "addendum")
+	    				.attr("width", 100)
+	    				.attr("height", "100%")
+	    				//.style("stroke", "red")
+
+	    		var rect2 =	svg_add.append("rect")
+				    			.attr("width", 25)
+				    			.attr("height", 546)
+				    			.attr("class", "rect2")
+								.attr("transform", "translate("+22+","+33+")")
+								.style("fill", "none")
+				    			.style("stroke", "green");
+				    			//.style("stroke", "orange");
+				    svg_add.append('text')
+				    		.attr("transform", "translate("+(11)+","+(595)+")")
+				    		.attr("x", 0 )
+			                 .attr("y", 0 )
+			                 .text( "Selection")
+			                 .attr("font-family", "Raleway")
+			                 .attr("font-size", "11px")
+			                 .attr("font-weight", 500)
+			                 .attr("fill", "black");
 
 	var g = svg.append( "g" );
 	//var g2 = svg.append( "g" );
@@ -56,8 +75,8 @@
 	//PROJECTION
 	var albersProjection = d3.geoAlbers()
 	    .scale( 190000 )
-	    .rotate( [71.087,0] )
-	    .center( [0, 42.313] )
+	    .rotate( [71.047,0] )
+	    .center( [0, 42.311] )
 	    .translate( [width/2,height/2] );
 
 	//DRAWING THE PATHS OF geoJSON OBJECTS
@@ -418,14 +437,12 @@ function dataLoaded(err, bos, sch, gj0, gj1){
 			.call(brush);
 
 		geos.forEach( function(d) {
+			//console.log(d);
+			d.properties.description = 	d.properties.description.replace(')', '').split('(')[1];
 
-			d.features.forEach( function(e) {
-				e.properties.description = 	e.properties.description.replace(')', '').split('(')[1];
-
-			})
 		})
 
-		console.log(geos);
+		//console.log(geos);
 
 		var centers = geos.map(function (d) {
 
@@ -458,7 +475,7 @@ function dataLoaded(err, bos, sch, gj0, gj1){
 
 			function clickedRect(){
 				svg.selectAll('.clickRect').remove();
-				svg.selectAll('.stop_n_frisks').style('fill','black');
+				svg.selectAll('.stop_n_frisks').style('fill','rgb(255,0,0)');
 				selected_GEOs = [];
 				selectedString = '';
 			}
@@ -499,7 +516,7 @@ function dataLoaded(err, bos, sch, gj0, gj1){
 						}
 					});
 
-					console.log(selectedString);
+					//console.log(selectedString);
 					//see if 510 works
 
 					svg.selectAll(".stop_n_frisks").style("fill", "white");
@@ -516,88 +533,120 @@ function dataLoaded(err, bos, sch, gj0, gj1){
 		
 	
 	function draw_chart_addendum ( _geos, _array) {
+		//console.log(_array);
 
-		console.log(_array);
+		var occur = array_occur(_array);
+
+		//console.log(occur);
+
+		var occur2 = make_array_of_objs(occur[0], occur[1]);
+		console.log(occur2);
+
+		occur2.sort(function(a, b) {
+		    return parseFloat(a.percentage) - parseFloat(b.percentage);
+		});
+
+
+
+		var addend_h = d3.select('.rect2').node().clientHeight;
+		
+		var y = d3.scaleLinear()
+		    			.range([addend_h, 0])
+		    			.domain([0, 100]);
+
+		var z = d3.scaleOrdinal()
+		   				 .range(["#7fc97f", "#beaed4", "#fdc086", "#ffff99", "#386cb0", "#f0027f", "#bf5b17"])
+		   				 .domain(["Black", "White", "Hispanic", "Data Unavailable", "Asian", "Middle Eastern", "American Indian"]);
+		
+		var stack = d3.stack()
+		    .offset(d3.stackOffsetExpand);
+
+		var lastHovered;
+		var prev=0;
+
+		//x.domain(data.map(function(d) { return d.Year; }));
+		 //z.domain(data.columns.slice(1));
+
+		var serie = svg_add.selectAll(".rects")
+		    .data(occur2)
+		    .enter()
+		      .append("rect")
+		      .attr("class", "rects")
+		      .attr("id", function(d) { return d.race+"add" })
+		      .attr("fill", function(d) { return z(d.race); })
+
+				.attr("x", 0)
+				.attr("y", function(d,i) { 	
+					if (i == 0) {
+						prev = 0;
+					} else {			
+						prev = prev + occur2[i].percentage;					
+					} return prev;
+				})
+				.attr("width", 25)
+				.attr("transform", "translate("+22+","+33+")")
+				//.style("fill", "#ddd");
+		      	.attr("height", function(d) { return d.percentage/100*546; }) //y(d.percentage);
+		   
+			  // .on("mouseover", function(d) { 
+		   //    		tooltip.style("display", null);
+		   //    		d3.select(this)
+		   //    			.attr("stroke","red")
+		   //    			.attr("stroke-width", 2)
+					// var e = document.querySelectorAll(':hover');
+					// var ind = e[6].__data__.index;
+					// lastHovered = ind;
+		 		// 	d3.select(serie._groups[0][ind].children[5])
+					// 	.style("stroke","red")
+					// 	.style("stroke-width", 2); 
+		   //          })
+			  // .on("mouseout", function(d) { 
+		   //    		tooltip.style("display", "none");
+		   //    		d3.select(this)
+		   //    			.attr("stroke","none");
+					// d3.select(serie._groups[0][lastHovered].children[5])
+					// 	.style("stroke","none");
+					// })
+			  // .on("mousemove", function(d) {
+		   //    		var xPosition = d3.mouse(this)[0] - 10;
+		   //    		var yPosition = d3.mouse(this)[1] + 16;
+		   //    		var elements = document.querySelectorAll(':hover');
+		   //    		var race = elements[6].__data__.key;
+		   //    		tooltip.attr("transform", "translate(" + xPosition + "," + yPosition + ")");
+		   //    		tooltip.select("text").text(race + ": "  + roundToOneDecimal(100*(d[1]-d[0])) + '%');
+		   //    	  });
 
 	}		
 
-			var y = d3.scaleLinear()
-		    .rangeRound([get_chart_h, 0]);
+	
 
-		var z = d3.scaleOrdinal()
-		    .range(["#7fc97f", "#beaed4", "#fdc086", "#ffff99", "#386cb0", "#f0027f", "#bf5b17"]);
+		
 
-		var stack = d3.stack()
-		    .offset(d3.stackOffsetExpand);
-			
-		var lastHovered;
+		
 
-		d3.csv("data/chart1data.csv", type, function(error, data) {
-		  if (error) throw error;
+		  
 
-		  x.domain(data.map(function(d) { return d.Year; }));
-		  z.domain(data.columns.slice(1));
-
-		  var serie = svg2.selectAll(".serie")
-		    .data(stack.keys(data.columns.slice(1))(data))
-		    .enter()
-		      .append("g")
-		      .attr("class", "serie")
-		      .attr("id", function(d) { return d.key })
-		      .attr("fill", function(d) { return z(d.key); });
+		  
 			  
-		  var tooltip = svg2.append("g")
-			.attr("class", "toolTip")
-			.style("display", null);
+		//   var tooltip = svg2.append("g")
+		// 	.attr("class", "toolTip")
+		// 	.style("display", null);
 
-		  tooltip.append("text")
-		    .attr("x", 15)
-		    .attr("dy", "1.2em")
-		    .style("text-anchor", "middle")
-			.style("text-align", "center")
-		    .attr("font-size", "12px")
-		    .attr("font-weight", "bold");	
+		//   tooltip.append("text")
+		//     .attr("x", 15)
+		//     .attr("dy", "1.2em")
+		//     .style("text-anchor", "middle")
+		// 	.style("text-align", "center")
+		//     .attr("font-size", "12px")
+		//     .attr("font-weight", "bold");	
 
-		  serie.selectAll("rect")
-		    .data(function(d) { return d; })
-			.enter().append("rect")
-		      .attr("x", function(d) { return x(d.data.Year); })
-		      .attr("y", function(d) { return y(d[1]); })
-		      .attr("height", function(d) { return y(d[0]) - y(d[1]); })
-		      .attr("width", x.bandwidth())
-			  .on("mouseover", function(d) { 
-		      		tooltip.style("display", null);
-		      		d3.select(this)
-		      			.attr("stroke","red")
-		      			.attr("stroke-width", 2)
-					var e = document.querySelectorAll(':hover');
-					var ind = e[6].__data__.index;
-					lastHovered = ind;
-		 			d3.select(serie._groups[0][ind].children[5])
-						.style("stroke","red")
-						.style("stroke-width", 2); 
-		            })
-			  .on("mouseout", function(d) { 
-		      		tooltip.style("display", "none");
-		      		d3.select(this)
-		      			.attr("stroke","none");
-					d3.select(serie._groups[0][lastHovered].children[5])
-						.style("stroke","none");
-					})
-			  .on("mousemove", function(d) {
-		      		var xPosition = d3.mouse(this)[0] - 10;
-		      		var yPosition = d3.mouse(this)[1] + 16;
-		      		var elements = document.querySelectorAll(':hover');
-		      		var race = elements[6].__data__.key;
-		      		tooltip.attr("transform", "translate(" + xPosition + "," + yPosition + ")");
-		      		tooltip.select("text").text(race + ": "  + roundToOneDecimal(100*(d[1]-d[0])) + '%');
-		      	  });
+		  
 
-		  svg2.append("g")
-		    .attr("class", "axis axis--x")
-		    .attr("transform", "translate(0," + get_chart_h + ")")
-		    .call(d3.axisBottom(x));
-		});
+		//   svg2.append("g")
+		//     .attr("class", "axis axis--x")
+		//     .attr("transform", "translate(0," + get_chart_h + ")")
+		//     .call(d3.axisBottom(x));
+		// });
 
 		function type(d, i, columns) {
 		  for (i = 1, t = 0; i < columns.length; ++i) t += d[columns[i]] = +d[columns[i]];
@@ -610,8 +659,60 @@ function dataLoaded(err, bos, sch, gj0, gj1){
 			return rounded;
 		}
 
+		function array_occur(arr) {
+
+			arr.forEach ( function(d,i) { 
+					//console.log(d);
+					if(d==null) {return arr[i] = "Data Unavailable";}
+					if(d=="Middle Eastern or East Indian") {return arr[i] = "Middle Eastern";}
+					if(d=="Asian or Pacific Islander") {return arr[i] = "Asian";}
+					// if(d=={ d = "Middle Eastern"; }
+			});
+
+			//console.log(arr);
+
+		    var a = [], b = [], prev, c = {};
+
+		    arr.sort();
+		    //console.log(arr);
+
+		    for ( var i = 0; i < arr.length; i++ ) {
+		        if ( arr[i] !== prev ) {
+		            a.push(arr[i]);
+		            b.push(1);
+		        } else {
+		            b[b.length-1]++;
+		        }
+		        prev = arr[i];
+		    }
+		    return [a, b];
+		}
 
 
+		function make_array_of_objs(_a, _b){
+
+			var sum = 0;
+				for (var i = 0; i < _b.length; i++) { 
+					sum = sum + _b[i];
+				}
+
+			var percent = [];
+				for (var i = 0; i < _b.length; i++) { 
+					percent[i] = _b[i]/sum*100;
+				}
+
+			var result = [];
+			var obj = {};
+				for (var i = 0; i < _a.length; i++) { 
+					obj = {
+						race: _a[i],
+						num_of_incidents: _b[i],
+						percentage: percent[i]
+					};
+					result.push(obj)
+				}
+			return result;
+		}
 	
 
     
