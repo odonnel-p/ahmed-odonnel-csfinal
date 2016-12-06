@@ -33,9 +33,7 @@
 	    .attr( "width", w )
 	    .attr( "height", h );
 
-	    //console.log(w+", "+width);
-
-	    		
+	    //console.log(w+", "+width);  		
 
 	svg.append("rect")
 	    .attr("class", "background")

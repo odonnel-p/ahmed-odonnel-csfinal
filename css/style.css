@@ -284,6 +284,12 @@ h1, h2, p {
 		border-radius: 2px;
 	}
 	
+	.mapLegend_icon {
+		width:8px;
+        height:8px;
+		margin-top:5px;
+	}
+	
 /*----------- Chart -----------*/
 
 .chart {
