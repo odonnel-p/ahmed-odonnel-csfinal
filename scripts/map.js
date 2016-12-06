@@ -231,11 +231,6 @@
 //
 //
 
-	//
-	// ZOOMING AND CLICKING FUNCTIONS OF MAP
-	// click area to zoom in on it
-	//
-
 	var sc_rad = function scaleradius () {
 
 	    if (zoomed == true){
