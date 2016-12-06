@@ -6,6 +6,11 @@ body {
     overflow-x: hidden;
 }
 
+::-webkit-scrollbar {
+    width: 0px;  /* remove scrollbar space */
+    background: transparent; 
+}
+
 #background {
     
     min-width: 900px; 
