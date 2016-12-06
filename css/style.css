@@ -145,10 +145,13 @@ body {
         }
 
         .design_row, .data_row, .additional_row {
-            width: 100%;
+			display:block;
             position: relative;
-            float:left;
-            /*border: solid blue 2px;*/
+			margin-left:auto;
+			margin-right:auto;
+			float:left;
+			width:33%;	
+			height:100%;
         } 
 
         .st1, .st2, .st3 {
@@ -160,7 +163,7 @@ body {
 
         .contains_text {
             float:left;
-            width: 350px;
+            width:250px;
             /*border: solid orange 2px;*/
         }
 
@@ -395,7 +398,7 @@ h1, h2, p {
    position:fixed;
    left:0px;
    bottom:0px;
-   height:30px;
+   height:150px;
    width:100%;
    background:#999;
 }
