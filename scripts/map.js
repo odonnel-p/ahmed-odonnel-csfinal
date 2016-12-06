@@ -48,7 +48,7 @@
 	    		var svg_add = svg.append("rect")
 	    			.attr("width", 25)
 	    			.attr("height", 546)
-	    			.attr("transform", "translate("+(w-55)+",4)")
+					.attr("transform", "translate("+(w-55)+",4)")
 	    			.style("fill", "#ddd");
 	    			//.style("stroke", "orange");
 
@@ -332,7 +332,7 @@ function dataLoaded(err, rows, bos, sch, gj0, gj1){
         .attr( 'd', geoPath )
 		.style("stroke","#fffff9")
 		.style("stroke-width",1)
-        .attr('transform', 'translate(-30,0)')
+        //.attr('transform', 'translate(-10,0)')
         .on("click", clicked);
     //END OF NEIGHBORHOODS ON MAP
 
@@ -343,7 +343,7 @@ function dataLoaded(err, rows, bos, sch, gj0, gj1){
 	 	.enter()
 	 	.append('circle')
 	 	.attr('class', 'stop_n_frisks')
-	 	.attr('id', function(d,i) { return ("sf"+i); })
+	 	.attr('id', function(d) { return ("sf"+d.properties.id); })
 	 	.attr('occurence', function(d,i) { return 'oc'+i })
 		.attr('cx', function(f) {
             var xy = albersProjection(f.geometry.coordinates);
@@ -356,7 +356,7 @@ function dataLoaded(err, rows, bos, sch, gj0, gj1){
 	        .style('fill', 'rgb(255,0,0)')
 	        .style('stroke-width', 0)
 	        .style('opacity', .12)
-	        .attr('transform', 'translate(-30,0)')
+	        //.attr('transform', 'translate(-30,0)')
 	        // .on("click", clicked);
 	 //END STOP AND FRISKS ON MAP
 
@@ -381,7 +381,7 @@ function dataLoaded(err, rows, bos, sch, gj0, gj1){
         //.transition(750)
         .attr('width', square)
         .attr('height', square)
-        .attr('transform', 'translate(-30,0)')
+        //.attr('transform', 'translate(-30,0)')
 	        .style('fill', '#171717')
 	        .style('stroke-width', 0)
 	        //.on("click", clicked);
@@ -413,7 +413,7 @@ function dataLoaded(err, rows, bos, sch, gj0, gj1){
 
 //
 //
-// BRUSH
+// BRUSH, courtesy of an example of E. Gunn
 //
 //		
 		var brush = d3.brush()
@@ -502,7 +502,9 @@ function dataLoaded(err, rows, bos, sch, gj0, gj1){
 
 					console.log(selectedString);
 					//see if 510 works
-					svg.selectAll(selectedString).style('fill','#80b78d');
+
+					svg.selectAll(".stop_n_frisks").style("fill", "white");
+					svg.selectAll(selectedString).style('fill','rgb(255,0,0)');
 
 					draw_chart_addendum(geos,selected_GEOArray);
 
@@ -526,42 +528,7 @@ function dataLoaded(err, rows, bos, sch, gj0, gj1){
 //
 //
 	
-	// var x0 = [w/2, h/2],
- //    y0 = [-4.5 * k, 4.5 * k],
-	// xx = d3.scaleLinear().domain(x0).range([0, width]),
- //    yy = d3.scaleLinear().domain(y0).range([height, 0]);
 
-	// var brush = d3.brush().on("end", brushended),
-	// idleTimeout,
- //    idleDelay = 350;
-
-	// svg.append("g")
-	//     .attr("class", "brush")
-	//     .call(brush);
-
-	// function brushended() {
-	//   var s = d3.event.selection;
-	  
-	//   if (!s) {
-	//     if (!idleTimeout) return idleTimeout = setTimeout(idled, idleDelay);
-	//     console.log("zoom out?")
-	//     // xx.domain(x0);
-	//     // yy.domain(y0);
-	//   } else {
-	//     xx.domain([s[0][0], s[1][0]].map(x.invert, x));
-	//     yy.domain([s[1][1], s[0][1]].map(y.invert, y));
-	//     svg.select(".brush").call(brush.move, null);
-	//   }
-	//   zoom();
-	// }
-
-	// function idled() {
-	// 	idleTimeout = null;
-	// }
-
-	// function zoom() {
-	//   console.log('do this to stacked bar');
-	// }
     
     
 
