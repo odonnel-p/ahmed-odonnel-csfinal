@@ -42,8 +42,9 @@ var svg_add = d3.select( ".plot" )
 	.append("svg")
 		.attr("class", "addendum")
 		.attr("id", "fff")
-		.attr("width", 66)
+		.attr("width", 126)
 		.attr("height", "100%")
+		//.attr("transform", "translate(-40,0)")
 		.style("display", "none");
 		
 var rect2 =	svg_add.append("rect")
@@ -438,18 +439,6 @@ function dataLoaded(err, bos, sch, gj0, gj1){
 		var stack = d3.stack()
 		    .offset(d3.stackOffsetExpand);
 
-		var tooltip = svg_add.append("g")
-			.attr("class", "toolTip")
-			.style("display", null);
-
-		  tooltip.append("text")
-		    .attr("x", 15)
-		    .attr("dy", "1.2em")
-		    .style("text-anchor", "middle")
-			.style("text-align", "center")
-		    .attr("font-size", "12px")
-		    .attr("font-weight", "bold");	
-
 		var prev = 0;
 		
 		var serie = svg_add.selectAll(".rects")
@@ -473,37 +462,51 @@ function dataLoaded(err, bos, sch, gj0, gj1){
 			      		d3.select(this)
 			      			.attr("stroke","green")
 			      			.attr("stroke-width", 2)
-						var e = document.querySelectorAll(':hover');
-						var ind = e[6].__data__.index;
-						lastHovered = ind;
-			 			d3.select(serie._groups[0][ind].children[5])
-							.style("stroke","red")
-							.style("stroke-width", 2); 
+						// var e = document.querySelectorAll(':hover');
+						// var ind = e[6].__data__.index;
+						// lastHovered = ind;
+			 		// 	d3.select(serie._groups[0][ind].children[5])
+						// 	.style("stroke","green")
+						// 	.style("stroke-width", 2); 
 
-						console.log("mouseover");
+						//console.log("mouseover");
 
 			            })
 				  .on("mouseout", function(d) { 
 			      		tooltip.style("display", "none");
 			      		d3.select(this)
 			      			.attr("stroke","none");
-						d3.select(serie._groups[0][lastHovered].children[5])
-							.style("stroke","none");
+						// d3.select(serie._groups[0][lastHovered].children[5])
+						// 	.style("stroke","none");
 
-						console.log("mouseout");
+						//console.log("mouseout");
 
 						})
 				  .on("mousemove", function(d) {
 			      		var xPosition = d3.mouse(this)[0] - 10;
 			      		var yPosition = d3.mouse(this)[1] + 16;
 			      		var elements = document.querySelectorAll(':hover');
-			      		var race = elements[6].__data__.key;
+			      		console.log(d);
+			      		var race = d.race;
+			      		//var race = elements[6].__data__.key;
 			      		tooltip.attr("transform", "translate(" + xPosition + "," + yPosition + ")");
-			      		tooltip.select("text").text(race + ": "  + roundToOneDecimal(100*(d[1]-d[0])) + '%');
+			      		tooltip.select("text").text(race + ": "  + roundToOneDecimal(d.percentage) + '%');
 
-			      		console.log("mousemove");
+			      		//console.log("mousemove");
 
 			      	  });
+
+		var tooltip = svg_add.append("g")
+			.attr("class", "toolTip")
+			.style("display", null);
+
+		  tooltip.append("text")
+		    .attr("x", 20)
+		    .attr("dy", "3.7em")
+		    .style("text-anchor", "start")
+			.style("text-align", "center")
+		    .attr("font-size", "12px")
+		    .attr("font-weight", "bold");	
 	}		
 
 	function type(d, i, columns) {
