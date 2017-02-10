@@ -233,14 +233,15 @@ h1, h2, p {
     position: relative;
     float:right;
     /*height:100px;*/
-    margin-top: 12px;
+    margin: 12px 20px 0 0;
+
 }
 .row {
         position: relative;
         float:left;
         height:18px;
         width: 100%;
-        margin-right: -22px;
+        /*margin-right: -22px;*/
 }
 
     .tiny {
