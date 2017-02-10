@@ -4,7 +4,7 @@
 //  zoom functionality based off: https://bl.ocks.org/mbostock/2206590
 //
 //global variables
-var w = d3.select('.plot').node().clientWidth-145,
+var w = d3.select('.plot').node().clientWidth-185,
 	h = d3.select('.plot').node().clientHeight;
 
 var width = d3.select('.plot').node().clientWidth,
@@ -44,7 +44,7 @@ var svg_add = d3.select( ".plot" )
 		.attr("id", "fff")
 		.attr("width", 70)
 		.attr("height", "100%")
-		//.attr("transform", "translate(-40,0)")
+		.style("padding-left", "40px")
 		.style("display", "none");
 		
 var rect2 =	svg_add.append("rect")
@@ -434,7 +434,7 @@ function dataLoaded(err, bos, sch, gj0, gj1){
 
 		var z = d3.scaleOrdinal()
 		   				 .range(["#7fc97f", "#beaed4", "#fdc086", "#ffff99", "#386cb0", "#f0027f", "#bf5b17"])
-		   				 .domain(["Black", "White", "Hispanic", "Data Unavailable", "Asian", "Middle Eastern", "American Indian"]);
+		   				 .domain(["Black", "White", "Hispanic", "Unavailable", "Asian", "Middle Eastern", "American Indian"]);
 		
 		var stack = d3.stack()
 		    .offset(d3.stackOffsetExpand);
@@ -501,9 +501,9 @@ function dataLoaded(err, bos, sch, gj0, gj1){
 			.style("display", null);
 
 		  tooltip.append("text")
-		    .attr("x", 20)
+		    .attr("x", 70)
 		    .attr("dy", "3.7em")
-		    .style("text-anchor", "start")
+		    .style("text-anchor", "end")
 			.style("text-align", "center")
 		    .attr("font-size", "12px")
 		    .attr("font-weight", "bold");	
@@ -524,7 +524,7 @@ function dataLoaded(err, bos, sch, gj0, gj1){
 
 		arr.forEach ( function(d,i) { 
 				//console.log(d);
-				if(d==null) {return arr[i] = "Data Unavailable";}
+				if(d==null) {return arr[i] = "Unavailable";}
 				if(d=="Middle Eastern or East Indian") {return arr[i] = "Middle Eastern";}
 				if(d=="Asian or Pacific Islander") {return arr[i] = "Asian";}
 				// if(d=={ d = "Middle Eastern"; }
