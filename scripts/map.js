@@ -42,7 +42,7 @@ var svg_add = d3.select( ".plot" )
 	.append("svg")
 		.attr("class", "addendum")
 		.attr("id", "fff")
-		.attr("width", 126)
+		.attr("width", 70)
 		.attr("height", "100%")
 		//.attr("transform", "translate(-40,0)")
 		.style("display", "none");

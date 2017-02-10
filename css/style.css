@@ -45,6 +45,7 @@ body {
         position: relative;
         overflow: hidden;
         height: 100%;
+		z-index:0;
     }
 
         .columnA {
@@ -304,6 +305,8 @@ h1, h2, p {
     height: 596px;
     background: none;
     margin-top: -5px;
+	position:relative;
+	z-index:1;
 }
 
 .toolTip {
@@ -384,8 +387,13 @@ h1, h2, p {
 }
 
 #ff {
-    position:fixed; top:88px; left:1080px;
-    
+    position:relative; top:88px; left:1080px;
+    z-index:0;
+}
+
+#fff {
+	position:relative;
+	z-index:5;
 }
  
    
