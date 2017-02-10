@@ -257,7 +257,7 @@ function dataLoaded(err, bos, sch, gj0, gj1){
 	//END OF NEIGHBORHOODS ON MAP
 
     //APPEND STOP AND FRISKS ON MAP
-	var radi = 1.1;
+	var radi = 1.7;
 	g.selectAll('.stop_n_frisks')
 	 	.data( geos )
 	 	.enter()
@@ -281,24 +281,24 @@ function dataLoaded(err, bos, sch, gj0, gj1){
 	
     //APPEND SCHOOLS ON MAP
     var square = 4;
-    //Plot schools as squares
-    g.selectAll('.square_school')
-        .data( sch2 )
-        .enter()
-        .append('rect')
-        .attr('class', 'square_school')
-        .attr('school_num', function(d,i) { return 's'+i })
-        .attr('x', function(f) {
-            var xy = albersProjection(f.loc);
-            return xy[0]; })
-        .attr('y', function(f) {
-            var xy = albersProjection(f.loc);
-            return xy[1]; })
-        .attr('width', square)
-        .attr('height', square)
-	        .style('fill', '#171717')
-	        .style('stroke-width', 0)
-	//END SCHOOLS ON MAP
+			    //Plot schools as squares
+			    // g.selectAll('.square_school')
+			    //     .data( sch2 )
+			    //     .enter()
+			    //     .append('rect')
+			    //     .attr('class', 'square_school')
+			    //     .attr('school_num', function(d,i) { return 's'+i })
+			    //     .attr('x', function(f) {
+			    //         var xy = albersProjection(f.loc);
+			    //         return xy[0]; })
+			    //     .attr('y', function(f) {
+			    //         var xy = albersProjection(f.loc);
+			    //         return xy[1]; })
+			    //     .attr('width', square)
+			    //     .attr('height', square)
+				   //      .style('fill', '#171717')
+				   //      .style('stroke-width', 0)
+				//END SCHOOLS ON MAP
 
 	// d3.select('#fff')
 	// 	.append('svg')
