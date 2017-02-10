@@ -52,7 +52,8 @@ var rect2 =	svg_add.append("rect")
 				.attr("class", "rect2")
 				.attr("transform", "translate("+22+","+33+")")
 				.style("fill", "none")
-				.style("stroke", "green");
+				.style("stroke", "green")
+					
 	svg_add.append('text')
 		.attr("transform", "translate("+(11)+","+(595)+")")
 		.attr("x", 0 )
@@ -64,17 +65,17 @@ var rect2 =	svg_add.append("rect")
 		.attr("fill", "black");
 						 
 							  
-var tooltip = svg_add.append("g")
-	.attr("class", "toolTip")
-	.style("display", null);
+// var tooltip = svg_add.append("g")
+// 	.attr("class", "toolTip")
+// 	.style("display", null);
 
-tooltip.append("text")
-  .attr("x", 15)
-  .attr("dy", "1.2em")
-  .style("text-anchor", "middle")
-.style("text-align", "center")
-  .attr("font-size", "12px")
-  .attr("font-weight", "bold");	
+// tooltip.append("text")
+//   .attr("x", 15)
+//   .attr("dy", "1.2em")
+//   .style("text-anchor", "middle")
+// .style("text-align", "center")
+//   .attr("font-size", "12px")
+//   .attr("font-weight", "bold");	
 
 var g = svg.append( "g" );
 //var g2 = svg.append( "g" );
@@ -319,7 +320,7 @@ function dataLoaded(err, bos, sch, gj0, gj1){
 		  }
 		});
 	
-	//BRUSH, courtesy of an example of E. Gunn		
+	//BRUSH, courtesy of an example by E. Gunn		
 	var brush = d3.brush()
 		.on("end", brushed);
 
@@ -467,33 +468,42 @@ function dataLoaded(err, bos, sch, gj0, gj1){
 				.attr("width", 25)
 				.attr("transform", "translate("+22+","+33+")")
 				.attr("height", function(d) { return y(d.percentage); }) //y(d.percentage);
-				  // .on("mouseover", function(d) { 
-			   //    		tooltip.style("display", null);
-			   //    		d3.select(this)
-			   //    			.attr("stroke","green")
-			   //    			.attr("stroke-width", 2)
-						// var e = document.querySelectorAll(':hover');
-						// var ind = e[6].__data__.index;
-						// lastHovered = ind;
-			 		// 	d3.select(serie._groups[0][ind].children[5])
-						// 	.style("stroke","red")
-						// 	.style("stroke-width", 2); 
-			   //          })
-				  // .on("mouseout", function(d) { 
-			   //    		tooltip.style("display", "none");
-			   //    		d3.select(this)
-			   //    			.attr("stroke","none");
-						// d3.select(serie._groups[0][lastHovered].children[5])
-						// 	.style("stroke","none");
-						// })
-				  // .on("mousemove", function(d) {
-			   //    		var xPosition = d3.mouse(this)[0] - 10;
-			   //    		var yPosition = d3.mouse(this)[1] + 16;
-			   //    		var elements = document.querySelectorAll(':hover');
-			   //    		var race = elements[6].__data__.key;
-			   //    		tooltip.attr("transform", "translate(" + xPosition + "," + yPosition + ")");
-			   //    		tooltip.select("text").text(race + ": "  + roundToOneDecimal(100*(d[1]-d[0])) + '%');
-			   //    	  });
+				  .on("mouseover", function(d) { 
+			      		tooltip.style("display", null);
+			      		d3.select(this)
+			      			.attr("stroke","green")
+			      			.attr("stroke-width", 2)
+						var e = document.querySelectorAll(':hover');
+						var ind = e[6].__data__.index;
+						lastHovered = ind;
+			 			d3.select(serie._groups[0][ind].children[5])
+							.style("stroke","red")
+							.style("stroke-width", 2); 
+
+						console.log("mouseover");
+
+			            })
+				  .on("mouseout", function(d) { 
+			      		tooltip.style("display", "none");
+			      		d3.select(this)
+			      			.attr("stroke","none");
+						d3.select(serie._groups[0][lastHovered].children[5])
+							.style("stroke","none");
+
+						console.log("mouseout");
+
+						})
+				  .on("mousemove", function(d) {
+			      		var xPosition = d3.mouse(this)[0] - 10;
+			      		var yPosition = d3.mouse(this)[1] + 16;
+			      		var elements = document.querySelectorAll(':hover');
+			      		var race = elements[6].__data__.key;
+			      		tooltip.attr("transform", "translate(" + xPosition + "," + yPosition + ")");
+			      		tooltip.select("text").text(race + ": "  + roundToOneDecimal(100*(d[1]-d[0])) + '%');
+
+			      		console.log("mousemove");
+
+			      	  });
 	}		
 
 	function type(d, i, columns) {

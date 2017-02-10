@@ -1,7 +1,7 @@
 var get_chart_h = d3.select('#chart').node().clientHeight-50;
 var get_chart_w = d3.select('#chart').node().clientWidth-50;
 var padding = 18;
-var svg2 = d3.select("#chart").append("svg").attr("id","svg2").attr("width",get_chart_w).attr("height",get_chart_h).style("padding", "10px 30px 30px 30px");
+var svg2 = d3.select("#chart").append("svg").attr("id","svg2").attr("width",get_chart_w).attr("height",get_chart_h).style("margin", "10px 30px 30px 0px");
 
 var x = d3.scaleBand()
     .rangeRound([padding, get_chart_w-padding]) //chart_w
