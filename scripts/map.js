@@ -275,7 +275,7 @@ function dataLoaded(err, bos, sch, gj0, gj1){
         .attr('r', radi)
 	        .style('fill', 'rgb(255,0,0)')
 	        .style('stroke-width', 0)
-	        .style('opacity', .12);
+	        .style('opacity', .10);
 	        //.attr('transform', 'translate(-30,0)');
 	
 	//END STOP AND FRISKS ON MAP
@@ -323,7 +323,10 @@ function dataLoaded(err, bos, sch, gj0, gj1){
 	
 	//BRUSH, courtesy of an example by E. Gunn		
 	var brush = d3.brush()
-		.on("end", brushed);
+		//.on("end", brushed)
+		.on("start", brushstart)
+    	.on("brush", brushmove)
+    	.on("end", brushed);
 
 	var gBrush = svg.append("g")
 		.attr("class", "brush")
@@ -350,7 +353,33 @@ function dataLoaded(err, bos, sch, gj0, gj1){
 
 	var selected_GEOs = [];
 
+
+		//start brush, clear selection and array
+		function brushstart() {
+		  console.log('brushstart event is triggered');
+
+		  svg.selectAll('.clickRect').remove();
+			svg_add.selectAll('.rects').remove();
+			d3.select(".selectionText")
+				.text("Click/drag to select an area");
+			
+			//intensify reaction
+			svg.selectAll('.stop_n_frisks').style('fill','rgb(255,0,0)').style('opacity', .15);
+		}
+
+
+		function brushmove() {
+		  console.log('the brush event is currently triggered');
+
+			
+			svg.selectAll('.stop_n_frisks').style('fill','rgb(255,0,0)').style('opacity', .15);
+		}
+
+
+	//update selection with extent
 	function brushed() {
+
+		console.log('Extent of brush.');
 
 		clickRect = svg.append('rect')
 			.attr('width',600)
@@ -362,11 +391,12 @@ function dataLoaded(err, bos, sch, gj0, gj1){
 
 		function clickedRect(){
 			svg.selectAll('.clickRect').remove();
-			svg_add.selectAll(".rects").remove();
+			svg_add.selectAll('.rects').remove();
 			d3.select(".selectionText")
 				.text("Click/drag to select an area");
 			
-			svg.selectAll('.stop_n_frisks').style('fill','rgb(255,0,0)');
+			svg.selectAll('.stop_n_frisks').style('fill','rgb(255,0,0)').style('opacity', .1);
+			// svg.selectAll(selectedString).style('fill','rgb(255,255,0)').style("opacity", 0.5);
 			selected_GEOs = [];
 			selectedString = '';
 		}
@@ -381,6 +411,8 @@ function dataLoaded(err, bos, sch, gj0, gj1){
 					bdy = by1 - by0,
 					max = 0;
 
+				selected_GEOs = [];
+				selectedString = '';
 				var selected_GEOArray = [];
 
 				centers.forEach(function(d){
@@ -388,6 +420,7 @@ function dataLoaded(err, bos, sch, gj0, gj1){
 						//console.log(d);
 						selected_GEOs.push(d);
 						selected_GEOArray.push(d.description);
+						// console.log(d);
 					}
 				});
 				
@@ -406,14 +439,15 @@ function dataLoaded(err, bos, sch, gj0, gj1){
 					}
 				});
 
-				svg.selectAll(".stop_n_frisks").style("fill", "white");
-				svg.selectAll(selectedString).style('fill','rgb(255,0,0)');
+				svg.selectAll(".stop_n_frisks").style("fill", "rgb(255,0,0)").style("opacity", 0.02);;
+				svg.selectAll(selectedString).style('fill','rgb(255,0,0)').style("opacity", 0.5);
 
 				draw_chart_addendum(geos,selected_GEOArray);
 
 				var invert1 = albersProjection.invert(s[0]);
 				var invert2 = albersProjection.invert(s[1]);
 			}
+		
 	}
 	
 	function draw_chart_addendum ( _geos, _array) {
