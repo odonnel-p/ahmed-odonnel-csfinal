@@ -4,7 +4,7 @@
 //  zoom functionality based off: https://bl.ocks.org/mbostock/2206590
 //
 //global variables
-var w = d3.select('.plot').node().clientWidth-145,
+var w = d3.select('.plot').node().clientWidth-185,
 	h = d3.select('.plot').node().clientHeight;
 
 var width = d3.select('.plot').node().clientWidth,
@@ -44,7 +44,7 @@ var svg_add = d3.select( ".plot" )
 		.attr("id", "fff")
 		.attr("width", 70)
 		.attr("height", "100%")
-		//.attr("transform", "translate(-40,0)")
+		.style("padding-left", "40px")
 		.style("display", "none");
 		
 var rect2 =	svg_add.append("rect")
@@ -275,7 +275,7 @@ function dataLoaded(err, bos, sch, gj0, gj1){
         .attr('r', radi)
 	        .style('fill', 'rgb(255,0,0)')
 	        .style('stroke-width', 0)
-	        .style('opacity', .12);
+	        .style('opacity', .10);
 	        //.attr('transform', 'translate(-30,0)');
 	
 	//END STOP AND FRISKS ON MAP
@@ -323,7 +323,10 @@ function dataLoaded(err, bos, sch, gj0, gj1){
 	
 	//BRUSH, courtesy of an example by E. Gunn		
 	var brush = d3.brush()
-		.on("end", brushed);
+		//.on("end", brushed)
+		.on("start", brushstart)
+    	.on("brush", brushmove)
+    	.on("end", brushed);
 
 	var gBrush = svg.append("g")
 		.attr("class", "brush")
@@ -350,7 +353,33 @@ function dataLoaded(err, bos, sch, gj0, gj1){
 
 	var selected_GEOs = [];
 
+
+		//start brush, clear selection and array
+		function brushstart() {
+		  console.log('brushstart event is triggered');
+
+		  svg.selectAll('.clickRect').remove();
+			svg_add.selectAll('.rects').remove();
+			d3.select(".selectionText")
+				.text("Click/drag to select an area");
+			
+			//intensify reaction
+			svg.selectAll('.stop_n_frisks').style('fill','rgb(255,0,0)').style('opacity', .15);
+		}
+
+
+		function brushmove() {
+		  console.log('the brush event is currently triggered');
+
+			
+			svg.selectAll('.stop_n_frisks').style('fill','rgb(255,0,0)').style('opacity', .15);
+		}
+
+
+	//update selection with extent
 	function brushed() {
+
+		console.log('Extent of brush.');
 
 		clickRect = svg.append('rect')
 			.attr('width',600)
@@ -362,11 +391,12 @@ function dataLoaded(err, bos, sch, gj0, gj1){
 
 		function clickedRect(){
 			svg.selectAll('.clickRect').remove();
-			svg_add.selectAll(".rects").remove();
+			svg_add.selectAll('.rects').remove();
 			d3.select(".selectionText")
 				.text("Click/drag to select an area");
 			
-			svg.selectAll('.stop_n_frisks').style('fill','rgb(255,0,0)');
+			svg.selectAll('.stop_n_frisks').style('fill','rgb(255,0,0)').style('opacity', .1);
+			// svg.selectAll(selectedString).style('fill','rgb(255,255,0)').style("opacity", 0.5);
 			selected_GEOs = [];
 			selectedString = '';
 		}
@@ -381,6 +411,8 @@ function dataLoaded(err, bos, sch, gj0, gj1){
 					bdy = by1 - by0,
 					max = 0;
 
+				selected_GEOs = [];
+				selectedString = '';
 				var selected_GEOArray = [];
 
 				centers.forEach(function(d){
@@ -388,6 +420,7 @@ function dataLoaded(err, bos, sch, gj0, gj1){
 						//console.log(d);
 						selected_GEOs.push(d);
 						selected_GEOArray.push(d.description);
+						// console.log(d);
 					}
 				});
 				
@@ -406,14 +439,15 @@ function dataLoaded(err, bos, sch, gj0, gj1){
 					}
 				});
 
-				svg.selectAll(".stop_n_frisks").style("fill", "white");
-				svg.selectAll(selectedString).style('fill','rgb(255,0,0)');
+				svg.selectAll(".stop_n_frisks").style("fill", "rgb(255,0,0)").style("opacity", 0.02);;
+				svg.selectAll(selectedString).style('fill','rgb(255,0,0)').style("opacity", 0.5);
 
 				draw_chart_addendum(geos,selected_GEOArray);
 
 				var invert1 = albersProjection.invert(s[0]);
 				var invert2 = albersProjection.invert(s[1]);
 			}
+		
 	}
 	
 	function draw_chart_addendum ( _geos, _array) {
@@ -434,7 +468,7 @@ function dataLoaded(err, bos, sch, gj0, gj1){
 
 		var z = d3.scaleOrdinal()
 		   				 .range(["#7fc97f", "#beaed4", "#fdc086", "#ffff99", "#386cb0", "#f0027f", "#bf5b17"])
-		   				 .domain(["Black", "White", "Hispanic", "Data Unavailable", "Asian", "Middle Eastern", "American Indian"]);
+		   				 .domain(["Black", "White", "Hispanic", "Unavailable", "Asian", "Middle Eastern", "American Indian"]);
 		
 		var stack = d3.stack()
 		    .offset(d3.stackOffsetExpand);
@@ -501,9 +535,9 @@ function dataLoaded(err, bos, sch, gj0, gj1){
 			.style("display", null);
 
 		  tooltip.append("text")
-		    .attr("x", 20)
+		    .attr("x", 70)
 		    .attr("dy", "3.7em")
-		    .style("text-anchor", "start")
+		    .style("text-anchor", "end")
 			.style("text-align", "center")
 		    .attr("font-size", "12px")
 		    .attr("font-weight", "bold");	
@@ -524,7 +558,7 @@ function dataLoaded(err, bos, sch, gj0, gj1){
 
 		arr.forEach ( function(d,i) { 
 				//console.log(d);
-				if(d==null) {return arr[i] = "Data Unavailable";}
+				if(d==null) {return arr[i] = "Unavailable";}
 				if(d=="Middle Eastern or East Indian") {return arr[i] = "Middle Eastern";}
 				if(d=="Asian or Pacific Islander") {return arr[i] = "Asian";}
 				// if(d=={ d = "Middle Eastern"; }
