@@ -84,6 +84,8 @@ d3.csv("data/chart1data.csv", type, function(error, data) {
     .attr("class", "axis axis--x")
     .attr("transform", "translate(0," + get_chart_h + ")")
     .call(d3.axisBottom(x));
+	
+  svg2.attr("height",get_chart_h+20);
 });
 
 function type(d, i, columns) {
