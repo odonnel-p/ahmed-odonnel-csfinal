@@ -376,18 +376,17 @@ h1, h2, p {
 }
 
 
-
-
 #f {
     /*background:#eee;
     opacity: 0.99;*/
     padding:20px;
     width:400px;
     position:fixed; top:150px; left:0px;
+	z-index:-1;
 }
 
 #ff {
-    position:relative; top:88px; left:1080px;
+    position:fixed; top:88px; left:1080px;
     z-index:0;
 }
 
@@ -395,11 +394,6 @@ h1, h2, p {
 	position:relative;
 	z-index:5;
 }
- 
-   
-
-
-
 
     #svg_clear {
         z-index: 1;
