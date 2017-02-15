@@ -150,7 +150,14 @@
         <!---script to move titles-->
 
         <script type="text/javascript">
-
+		
+		function offsetTop(el, i) { i = i || 0; return $(el)[i].getBoundingClientRect().top }
+		
+		var plotTop = offsetTop('.plot');
+		var chartTop = offsetTop('#ff');
+		console.log("plotTop=" + plotTop);
+		console.log("chartTop=" + chartTop);
+		
         var windw = this;
 
             $.fn.followTo = function ( pos ) {
@@ -175,11 +182,14 @@
             $('#f').followTo(520);
 
             $.fn.followTo2 = function ( pos ) {
+			
                 var $this = this,
                     $window = $(windw);
                 
                 $window.scroll(function(e){
-                    if ($window.scrollTop() > pos) {
+					console.log($window.scrollTop());
+
+                    if ($window.scrollTop() >= pos) {
                         $this.css({
                             position: 'absolute',
                             top: pos+38
@@ -196,7 +206,7 @@
             $('#ff').followTo2(610);
 
                     var footer = $('#footer'),
-                    extra = 10; // In case you want to trigger it a bit sooner than exactly at the bottom.
+                    extra = 20; // In case you want to trigger it a bit sooner than exactly at the bottom.
 
                 footer.css({ opacity: '0', display: 'block' });
 
