@@ -93,9 +93,8 @@ body {
 
 #containermap {
     width: 100%;
-    height: 800px;
-    
-    min-height: 800px;
+    height: 80%;
+
     /*background-color: #eee;  */
 }
 
